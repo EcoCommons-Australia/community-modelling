@@ -1,0 +1,75 @@
+
+
+#' GDM summary
+#'
+#' Generate a summary report on a fitted GDM. Output is always written to the console and, optionally, also written to a text file.
+#'
+#' @param thisExperiment cm_experiment object. Experiment object storing a successfully fitted GDM
+#' @param outFile Character. File name (with full path) into which the summary will be written. Default of "" means no file will be written
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Console-only output
+#' cm_gdm_summary(anExperiment)
+#' 
+#' # Console and file output
+#' cm_gdm_summary(anotherExperiment, file = "thisFile.txt")
+#' }
+#' 
+cm_gdm_summary <- function(thisExperiment,
+                           outFile = "")
+{
+  if (!("cm_experiment" %in% class(thisExperiment)))
+    stop("Object passed in 'thisExperiment' must be of class 'cm_experiment'")
+  
+  if (!thisExperiment$status["modelFit_OK"])
+    stop(paste("No GDM model has been successfully fitted for experiment", thisExperiment$experimentName))
+  
+  impScores <- round(100*thisExperiment$model$varImp[[2]][,1]/sum(thisExperiment$model$varImp[[2]][, 1]), 2)
+  
+  maxLen <- max(unlist(lapply(names(impScores), stringr::str_length)))
+  paddedNames <- stringr::str_pad(names(impScores), side = "left", width = maxLen + 4, pad = " ")
+  paddedNums <- paste0("   ", format(impScores)) #stringr::str_pad(as.character(impScores), side = "left", width = 6, pad = " ")
+  #impTable <- data.frame(Covariate = names(impScores), Contribution = impScores, stringsAsFactors = FALSE)
+  impTable <- matrix(c(paddedNames, paddedNums), ncol = 2, dimnames = list(NULL, c("Covariate", "Contribution (%)")))
+  impTable_str <- c("    Covariate       % Contrib.", "    ------------    -----------", paste(impTable[, 1], impTable[, 2]))
+  
+  summaryLines <- NULL
+  
+  summaryLines <- c(summaryLines,
+                    "-----------------------------------------------",
+                    "EcoCommons Community Modelling Module",
+                    "GDM Model Summary",
+                    "-----------------------------------------------",
+                    "",
+                    paste("Experiment name:", thisExperiment$experimentName),
+                    paste("Run date:", thisExperiment$dateLastModelRun),
+                    "",
+                    paste("Number of sites/samples:", thisExperiment$model$gdm$sample),
+                    "",
+                    "Covariates:",
+                    paste("  Geographical distance included:", ifelse(thisExperiment$model$gdm$geo, "Yes", "No")),
+                    paste("  Covariates: Number used =", length(thisExperiment$model$gdm$predictors)),
+                    paste0("    ", sort(thisExperiment$model$gdm$predictors)),
+                    "",
+                    "Model performance:",
+                    paste("  Model deviance:", round(thisExperiment$model$gdm$gdmdeviance, 2)),
+                    paste0("  Explained deviance: ", round(thisExperiment$model$gdm$explained, 2),
+                           " (", round(100*thisExperiment$model$gdm$explained/thisExperiment$model$gdm$gdmdeviance, 2), "%)"),
+                    paste("  NULL deviance:", round(thisExperiment$model$gdm$nulldeviance, 2)),
+                    "",
+                    "Covariate importance:",
+                    impTable_str
+                    )
+  
+  cat(paste(summaryLines, collapse = "\n"))
+  
+  if (outFile != "")
+  {
+    writeLines(summaryLines, outFile)
+  }
+}
+  

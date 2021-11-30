@@ -1,0 +1,62 @@
+-----------------------------------------------
+EcoCommons Community Modelling Module
+GDM Model Summary
+-----------------------------------------------
+
+Experiment name: Test with RF refugia data
+Run date: 2021-11-30
+
+Number of sites/samples: 703
+
+Covariates:
+  Geographical distance included: Yes
+  Covariates: Number used = 20
+    CHELSA_bio01
+    CHELSA_bio02
+    CHELSA_bio03
+    CHELSA_bio04
+    CHELSA_bio05
+    CHELSA_bio06
+    CHELSA_bio07
+    CHELSA_bio08
+    CHELSA_bio09
+    CHELSA_bio10
+    CHELSA_bio11
+    CHELSA_bio12
+    CHELSA_bio13
+    CHELSA_bio14
+    CHELSA_bio15
+    CHELSA_bio16
+    CHELSA_bio17
+    CHELSA_bio18
+    CHELSA_bio19
+    Geographic
+
+Model performance:
+  Model deviance: 19.39
+  Explained deviance: 6.83 (35.21%)
+  NULL deviance: 20.81
+
+Covariate importance:
+    Covariate       % Contrib.
+    ------------    -----------
+      Geographic     0.00
+    CHELSA_bio01     0.00
+    CHELSA_bio02     0.00
+    CHELSA_bio03     0.00
+    CHELSA_bio04    28.44
+    CHELSA_bio05     0.00
+    CHELSA_bio06     7.74
+    CHELSA_bio07     0.00
+    CHELSA_bio08     2.86
+    CHELSA_bio09    36.61
+    CHELSA_bio10     0.00
+    CHELSA_bio11     0.00
+    CHELSA_bio12    12.36
+    CHELSA_bio13     0.00
+    CHELSA_bio14     0.00
+    CHELSA_bio15     0.00
+    CHELSA_bio16     0.00
+    CHELSA_bio17     0.00
+    CHELSA_bio18    11.99
+    CHELSA_bio19     0.00
