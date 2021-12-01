@@ -25,13 +25,13 @@ cm_load_community_data(
 
 \item{dataType}{Character. One of the accepted data types in entries in the file named in \emph{bioFilename}}
 
-\item{presenceMarker}{Character. Denotes "presence" when in the file named in \emph{bioFilename} has \emph{dataType} of "Presence" or "Presence-Absence"}
+\item{presenceMarker}{Character. Denotes "presence" when in the file named in \emph{bioFilename} has \emph{dataType} of "Presence-Absence"}
 
 \item{absenceMarker}{Character. Denotes "absence" when in the file named in \emph{bioFilename} has \emph{dataType} of "Presence-Absence"}
 
 \item{siteCol}{Character or integer. Name or numeric index to the column holding the site names or identifiers}
 
-\item{dissimMeasure}{Character. The type of dissimilarity measure stored in the file named in \emph{bioFilename} when \emph{dataType} is "Dissimilarity"}
+\item{dissimMeasure}{Character. The type of dissimilarity measure stored in the file named in \emph{bioFilename} when \emph{dataType} is "Dissimilarity". For \emph{Presence-absence} and \emph{Abundance} data, this will be the dissimilarity measure computed from the data table}
 
 \item{trace}{Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise}
 }
@@ -39,7 +39,7 @@ cm_load_community_data(
 cm_experiment object with updated fields
 }
 \description{
-The data table loaded by this function represents to response or dependent variable to be modelled as a function of one or more ecological covariates.
+The data table loaded by this function represents the response or dependent variable to be modelled as a function of one or more ecological covariates.
 }
 \details{
 Data may be in the form of a presence-absence table, abundance data, or a pre-computed dissimilarity matrix.

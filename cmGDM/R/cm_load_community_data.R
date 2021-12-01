@@ -2,7 +2,7 @@
 
 #' Load community data into a cm_experiment object
 #' 
-#' The data table loaded by this function represents to response or dependent variable to be modelled as a function of one or more ecological covariates.
+#' The data table loaded by this function represents the response or dependent variable to be modelled as a function of one or more ecological covariates.
 #' 
 #' Data may be in the form of a presence-absence table, abundance data, or a pre-computed dissimilarity matrix.
 #' 
@@ -12,10 +12,10 @@
 #' @param bioFilename Character. Full path to a file containing an accepted form of biological or community data
 #' @param sheet Character or integer. Name or index number of a sheet if \emph{bioFilename} points to a file containing a spreadsheet/workbook
 #' @param dataType Character. One of the accepted data types in entries in the file named in \emph{bioFilename}
-#' @param presenceMarker Character. Denotes "presence" when in the file named in \emph{bioFilename} has \emph{dataType} of "Presence" or "Presence-Absence"
+#' @param presenceMarker Character. Denotes "presence" when in the file named in \emph{bioFilename} has \emph{dataType} of "Presence-Absence"
 #' @param absenceMarker Character. Denotes "absence" when in the file named in \emph{bioFilename} has \emph{dataType} of "Presence-Absence"
 #' @param siteCol Character or integer. Name or numeric index to the column holding the site names or identifiers
-#' @param dissimMeasure Character. The type of dissimilarity measure stored in the file named in \emph{bioFilename} when \emph{dataType} is "Dissimilarity"
+#' @param dissimMeasure Character. The type of dissimilarity measure stored in the file named in \emph{bioFilename} when \emph{dataType} is "Dissimilarity". For \emph{Presence-absence} and \emph{Abundance} data, this will be the dissimilarity measure computed from the data table
 #' @param trace Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise
 #'
 #' @return cm_experiment object with updated fields

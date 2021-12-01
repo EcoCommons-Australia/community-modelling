@@ -20,7 +20,7 @@ Experiments can only be run when all preceding steps in the workflow have been s
 \examples{
 \dontrun{
 
-anotherExperiment <- cm_run_experiment(anotherExperiment)
+anotherExperiment <- cm_run_gdm_experiment(anotherExperiment)
 
 }
 }

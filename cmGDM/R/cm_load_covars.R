@@ -60,7 +60,7 @@ cm_load_covar_data <- function(thisExperiment,
                                 thisExperiment$data$siteData$dataTable[, c(thisExperiment$data$siteData$longitudeCol,
                                                                            thisExperiment$data$siteData$latitudeCol)]))
   
-  # Drop ID column inserted by terra::extract. WHY DO THIS????
+  # Drop ID column inserted by terra::extract. WHY DOES terra::extract DO THIS????
   siteEnvData <- siteEnvData[, -1]
   
   if (trace)
@@ -97,6 +97,7 @@ cm_load_covar_data <- function(thisExperiment,
   thisExperiment$status["covarData_OK"] <- TRUE
   thisExperiment$data$covarData$srcFolder <- src_folder
   thisExperiment$data$covarData$filenames <- covar_filenames
+  thisExperiment$data$covarData$covarNames <- gsub(pattern = "(.*)\\..*$", replacement = "\\1", covar_filenames)
   thisExperiment$data$covarData$label <- label
   thisExperiment$data$covarData$dataTable <- siteEnvData
   thisExperiment$data$covarData$covarSiteMin <- siteEnvRange["min", ]

@@ -12,7 +12,7 @@
 #' @examples
 #' \dontrun{
 #' 
-#' anotherExperiment <- cm_run_experiment(anotherExperiment)
+#' anotherExperiment <- cm_run_gdm_experiment(anotherExperiment)
 #' 
 #' }
 cm_run_gdm_experiment <- function(thisExperiment,

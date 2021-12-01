@@ -22,12 +22,10 @@ Create three types of performance evaluation plot for a fitted GDM: observed v p
 \examples{
 \dontrun{
 # Default plots: show ALL variable contribution plots
-
 cm_performance_plots(anExperiment,
                      "/path/to/my/stuff")
-                     
+        
 # Show only var. contrib.plots when varaible importance is > 0
-
 cm_performance_plots(anExperiment,
                      "/path/to/my/stuff",
                      "nonzero")
