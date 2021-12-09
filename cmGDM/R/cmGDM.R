@@ -1,7 +1,7 @@
 
-#' cmGDM: Package containing tools support project work.
+#' cmGDM: Community Modelling using Generalised Dissimilarity Modelling
 #'
-#' EcoCommons Community Modelling experiment run using Generalised Dissimilarity Modelling 
+#' EcoCommons Community Modelling experiments run using Generalised Dissimilarity Modelling 
 #' 
 #' @import ggplot2
 #' @importFrom magrittr %>%

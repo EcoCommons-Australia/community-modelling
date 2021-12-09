@@ -57,13 +57,23 @@ cm_performance_plots <- function(thisExperiment,
   
   # Observed v Predicted Compositional Dissimilarity: This is the GDM equivalent
   # of a calibration plot
+  
+  # Make a data.frame holding expected curve data; the basic design of this
+  # code-chunk is borrowed from the gdm package source code.
+  expected_x <- seq(min(gdmModel$ecological),
+                    max(gdmModel$ecological),
+                    length = 200)
+  expected_y <- 1 - exp(-expected_x)
+  expected_curve <- data.frame(ecological = expected_x,
+                               observed = expected_y)
+
   png(paste0(outFolder, "/", thisExperiment$experimentName ,"_GDM_ecological_distance.png"))
   compDissim_ecoDist <- ggplot2::ggplot(data.frame(ecological = gdmModel$ecological,
                                                    observed = gdmModel$observed),
                                         aes(x = ecological, y = observed)) +
+    geom_line(data = expected_curve, colour = "dodgerblue", size = 1) +
     geom_point(colour = "blue") +
-    geom_smooth() +
-    ylim(c(0,1)) +
+    ylim(c(0, 1)) +
     xlab("Predicted Ecological Distance") +
     ylab("Observed Compositional Dissimilarity")
   plot(compDissim_ecoDist)
