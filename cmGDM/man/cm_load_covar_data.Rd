@@ -24,7 +24,7 @@ cm_load_covar_data(
 \item{trace}{Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise}
 }
 \value{
-
+Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment}
 }
 \description{
 Load Covariate Data

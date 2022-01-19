@@ -7,7 +7,7 @@
 #' @param outFolder Character. Full path to a folder into which image files will be written
 #' @param showVarImp Character. Control which set of variable contribution plots are created: "all" generates all plots; "nonzero" generates only plots for variables with a variable importance score greater than zero
 #'
-#' @return
+#' @return Nothing
 #' @export
 #'
 #' @examples
@@ -43,33 +43,37 @@ cm_performance_plots <- function(thisExperiment,
   # Predicted Ecological Distance: How well does the model do at linking a
   # predicted distance between samples/sites to the observed dissimilarity between
   # to site/sample pair?
-  png(paste0(outFolder, "/", thisExperiment$experimentName , "_GDM_observed_predicted_dissimilarity.png"))
-  compDissimPlot <- ggplot2::ggplot(data.frame(observed = gdmModel$observed,
-                                               predicted = gdmModel$predicted),
-                                    aes(x = predicted, y = observed)) +
-    geom_point(colour = "blue") +
+  grDevices::png(paste0(outFolder, "/", thisExperiment$experimentName , "_GDM_observed_predicted_dissimilarity.png"))
+  compDissimPlot <- ggplot2::ggplot(data.frame(observed = thisExperiment$gdmModel$observed,
+                                      predicted = thisExperiment$gdmModel$predicted),
+                           aes(x = predicted, y = observed)) +
+    
     ylim(c(0, 1)) +
-    geom_abline(slope = 1, intercept = 0) +
+    xlim(c(0, 1)) +
+    geom_abline(slope = 1, intercept = 0, colour = "dodgerblue", size = 1) +
+    geom_point(colour = "blue") +
     xlab("Predicted Compositional Dissimilarity") +
-    ylab("Observed Compositional Dissimilarity") #+
+    ylab("Observed Compositional Dissimilarity") +
+    theme(axis.text = element_text(size = 12),
+          axis.title = element_text(size = 14))
   plot(compDissimPlot)
-  dev.off()
+  grDevices::dev.off()
   
   # Observed v Predicted Compositional Dissimilarity: This is the GDM equivalent
   # of a calibration plot
   
   # Make a data.frame holding expected curve data; the basic design of this
   # code-chunk is borrowed from the gdm package source code.
-  expected_x <- seq(min(gdmModel$ecological),
-                    max(gdmModel$ecological),
+  expected_x <- seq(min(thisExperiment$gdmModel$ecological),
+                    max(thisExperiment$gdmModel$ecological),
                     length = 200)
   expected_y <- 1 - exp(-expected_x)
   expected_curve <- data.frame(ecological = expected_x,
                                observed = expected_y)
 
-  png(paste0(outFolder, "/", thisExperiment$experimentName ,"_GDM_ecological_distance.png"))
-  compDissim_ecoDist <- ggplot2::ggplot(data.frame(ecological = gdmModel$ecological,
-                                                   observed = gdmModel$observed),
+  grDevices::png(paste0(outFolder, "/", thisExperiment$experimentName ,"_GDM_ecological_distance.png"))
+  compDissim_ecoDist <- ggplot2::ggplot(data.frame(ecological = thisExperiment$gdmModel$ecological,
+                                                   observed = thisExperiment$gdmModel$observed),
                                         aes(x = ecological, y = observed)) +
     geom_line(data = expected_curve, colour = "dodgerblue", size = 1) +
     geom_point(colour = "blue") +
@@ -77,7 +81,7 @@ cm_performance_plots <- function(thisExperiment,
     xlab("Predicted Ecological Distance") +
     ylab("Observed Compositional Dissimilarity")
   plot(compDissim_ecoDist)
-  dev.off()
+  grDevices::dev.off()
   
   # Variable contribution plots
   # Which vars are in the final fit? We will only produce

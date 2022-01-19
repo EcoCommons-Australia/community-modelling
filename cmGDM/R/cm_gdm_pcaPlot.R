@@ -1,7 +1,20 @@
-
-
-
-
+#' GDM PCA plot of scaled covariates
+#'
+#' Produce a raster map colour-coded using the first three components of a Principal Component Analysis (PCA) of scaled covariates. Grid cells with the similar colours represent cells with the same combination of scaled environmental variables and therefore similar predicted community composition.  
+#'
+#' Both graphics output (as a PNG-formatted image) and a GeoTIFF raster are output.
+#'
+#' @param thisExperiment Object of class 'cm_experiment'
+#' @param outFolder Character (string). Path of a folder into which the output GIS layer and PNG image will be written
+#' @param trace Logical. Produce console messages? Default is FALSE
+#'
+#' @return Nothing
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' cm_gdm_pcaPlot(myExperiemnt, outFolder = "exprimentResults")
+#' }
 cm_gdm_pcaPlot <- function(thisExperiment,
                            outFolder = "",
                            trace = FALSE)
@@ -18,16 +31,17 @@ cm_gdm_pcaPlot <- function(thisExperiment,
   
   
   ########
+  if (trace) cat("Loading covariate layers and transforming using fitted GDM")
   studyStack <- terra::rast(paste0(thisExperiment$data$covarData$srcFolder, "/", thisExperiment$data$covarData$filenames))
   transStuff <- gdm::gdm.transform(thisExperiment$model$gdm, raster::stack(studyStack))
   
-  cat("done\nComputing PCA...")
+  if (trace) cat("Computing PCA and running prediction")
   transStuff_trimmed <- na.omit(terra::values(transStuff))
   
-  pcaResult <- prcomp(transStuff_trimmed)
+  pcaResult <- stats::prcomp(transStuff_trimmed)
   
-  pcaRast <- predict(transStuff, pcaResult, index = 1:3)
-  cat("done\nComputing colour mapping...")
+  pcaRast <- stats::predict(transStuff, pcaResult, index = 1:3)
+  if (trace) cat("Computing colour mapping")
   pcaRast[[1]] <- (pcaRast[[1]] - pcaRast[[1]]@data@min)/ (pcaRast[[1]]@data@max - pcaRast[[1]]@data@min) * 255
   
   if (sum(range(pcaRast[[2]][], na.rm = TRUE)) != 0) # There has got be a smarter way than this...
@@ -45,17 +59,19 @@ cm_gdm_pcaPlot <- function(thisExperiment,
   
   #colVals <- rgb(redPart, greenPart, bluePart)
   
-  newRas[goodCells]  <- rgb(redPart, greenPart, bluePart)
+  newRas[goodCells]  <- grDevices::rgb(redPart, greenPart, bluePart)
   
   # Save raster
+  if (trace) cat("Saving GIS raster")
   terra::writeRaster(terra::rast(newRas),
                      filename = paste0(outFolder, "/", thisExperiment$experimentName , "_GDM_transformed_PCA.tif"),
                      overwrite = TRUE,
                      gdal = "COMPRESS=DEFLATE" )
   
+  if (trace) cat("Saving PNG image")
   # render as png and save
-  png(paste0(outFolder, "/", thisExperiment$experimentName , "_GDM_transformed_PCA.png"),
+  grDevices::png(paste0(outFolder, "/", thisExperiment$experimentName , "_GDM_transformed_PCA.png"),
       width = 1024, height = 1024)
   raster::plotRGB(pcaRast, r = 1, g = 2, b = 3, main = thisExperiment$experimentName)
-  dev.off()
+  grDevices::dev.off()
 }

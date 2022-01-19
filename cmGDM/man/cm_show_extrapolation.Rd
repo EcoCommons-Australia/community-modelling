@@ -6,7 +6,7 @@
 \usage{
 cm_show_extrapolation(
   thisExperiment,
-  extrapType = c("all", "important"),
+  showVarImp = c("all", "important"),
   allPlots = FALSE,
   outFolder = ""
 )
@@ -14,15 +14,29 @@ cm_show_extrapolation(
 \arguments{
 \item{thisExperiment}{cm_experiment object. The experiment with a fitted GDM to be processed}
 
-\item{extrapType}{Character string. Show extrapolation for all covariates presented to model fitting ("all"), or just those with variable importance > 0 ("important")}
+\item{showVarImp}{Character string. Show extrapolation for all covariates presented to model fitting ("all"), or just those with variable importance > 0 ("important")}
 
 \item{allPlots}{Logical. Show extrapolation plots for each covariate plus the overall extrapolation plot (TRUE) or just the overall plot (default, FALSE)}
 
 \item{outFolder}{Character string. Full path to a folder to be used for output geoTIFF and PNG files}
 }
 \value{
-
+Nothing
 }
 \description{
-Models applied to covariate values outside the range used to fit the model cannot be trusted. EXTRREME caution is required when interpreting results in areas where extrapolation has occurred. This function identifies the regions where extrapolation has occurred, and outputs PNG and geoTIFF files showing grid cells within which extrapolation has NOT occurred (i.e. "good" cells)
+Models applied to covariate values outside the range used to fit the model cannot be trusted.
+}
+\details{
+EXTRREME caution is required when interpreting results in areas where extrapolation has occurred.
+
+This function identifies the regions where extrapolation has occurred, and outputs PNG and geoTIFF files showing grid cells within which extrapolation has NOT occurred (i.e. "good" cells)
+}
+\examples{
+\dontrun{
+# Show areas with NO extrapolation for all variables
+cm_show_extrapolation(myExperiment, showVarImp = "all")
+
+# Show areas with No extrapolation but only for IMPORTANT variables
+cm_show_extrapolation(myExperiment, showVarImp = "important")
+}
 }

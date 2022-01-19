@@ -3,7 +3,7 @@
 \docType{package}
 \name{cmGDM}
 \alias{cmGDM}
-\title{cmGDM: Package containing tools support project work.}
+\title{cmGDM: Community Modelling using Generalised Dissimilarity Modelling}
 \description{
-EcoCommons Community Modelling experiment run using Generalised Dissimilarity Modelling
+EcoCommons Community Modelling experiments run using Generalised Dissimilarity Modelling
 }

@@ -9,7 +9,7 @@
 #' @param label Character. An optional human-friendly label for the project's environmental data
 #' @param trace Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise
 #' 
-#' @return
+#' @return Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment}
 #' @export
 #'
 #' @examples

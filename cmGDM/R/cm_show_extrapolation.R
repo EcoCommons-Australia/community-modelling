@@ -1,19 +1,30 @@
 
 #' Show extrapolation
 #'
-#' Models applied to covariate values outside the range used to fit the model cannot be trusted. EXTRREME caution is required when interpreting results in areas where extrapolation has occurred. This function identifies the regions where extrapolation has occurred, and outputs PNG and geoTIFF files showing grid cells within which extrapolation has NOT occurred (i.e. "good" cells)
+#' Models applied to covariate values outside the range used to fit the model cannot be trusted.
+#' 
+#' EXTRREME caution is required when interpreting results in areas where extrapolation has occurred.
+#' 
+#' This function identifies the regions where extrapolation has occurred, and outputs PNG and geoTIFF files showing grid cells within which extrapolation has NOT occurred (i.e. "good" cells)
 #'
 #' @param thisExperiment cm_experiment object. The experiment with a fitted GDM to be processed
-#' @param extrapType Character string. Show extrapolation for all covariates presented to model fitting ("all"), or just those with variable importance > 0 ("important") 
+#' @param showVarImp Character string. Show extrapolation for all covariates presented to model fitting ("all"), or just those with variable importance > 0 ("important") 
 #' @param allPlots Logical. Show extrapolation plots for each covariate plus the overall extrapolation plot (TRUE) or just the overall plot (default, FALSE)
 #' @param outFolder Character string. Full path to a folder to be used for output geoTIFF and PNG files
 #'
-#' @return
+#' @return Nothing
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' # Show areas with NO extrapolation for all variables
+#' cm_show_extrapolation(myExperiment, showVarImp = "all")
+#' 
+#' # Show areas with No extrapolation but only for IMPORTANT variables
+#' cm_show_extrapolation(myExperiment, showVarImp = "important")
+#' }
 cm_show_extrapolation <- function(thisExperiment,
-                                  extrapType = c("all", "important"),
+                                  showVarImp = c("all", "important"),
                                   allPlots = FALSE,
                                   outFolder = "")
   
@@ -24,7 +35,7 @@ cm_show_extrapolation <- function(thisExperiment,
   if (!thisExperiment$status["modelFit_OK"])
     stop("Cannot generate performance plots: no successfully fitted GDM found in 'thisExperiment'")
   
-  if (!(toupper(extrapType) %in% c("ALL", "IMPORTANT")))
+  if (!(toupper(showVarImp) %in% c("ALL", "IMPORTANT")))
     stop("'showVarImp' must be one of 'all' or 'important'")
   
   if (!dir.exists(outFolder))
@@ -35,14 +46,14 @@ cm_show_extrapolation <- function(thisExperiment,
   
   covarStack <- terra::rast(covarFiles)
   
-  if (extrapType == "all")
+  if (showVarImp == "all")
   {
     ### Type 1: Strict extrapolation for all covariates presented during model fitting
     outStack <- covarStack
     
     covarNames <- gsub(".tif", "", thisExperiment$data$covarData$filenames, fixed = TRUE)
     
-    for (thisVarInd in 1:19)
+    for (thisVarInd in 1:length(thisExperiment$data$covarData$covarSiteMin))
     {
       covarRange_site <- c(thisExperiment$data$covarData$covarSiteMin[thisVarInd],
                            thisExperiment$data$covarData$covarSiteMax[thisVarInd])
@@ -53,23 +64,23 @@ cm_show_extrapolation <- function(thisExperiment,
       
       if (allPlots)
       {
-        png(file.path(outFolder, paste0("cm_gdm_extrapolation_", covarNames[thisVarInd]), ".png"),
+        grDevices::png(file.path(outFolder, paste0("cm_gdm_extrapolation_", covarNames[thisVarInd]), ".png"),
             width = 1024, height = 1024)
         plot(extrapRas, main = paste0("Good cells: ", covarNames[thisVarInd]))
-        dev.off()
+        grDevices::dev.off()
         
-        terra::writeRaster(extrapRas, paste0("cm_gdm_extrapolation_", covarNames[thisVarInd], ".tif"), gdal = "COMPRESS=DEFLATE")
+        terra::writeRaster(extrapRas, paste0("cm_gdm_extrapolation_", covarNames[thisVarInd], "_no_extrapolation.tif"), gdal = "COMPRESS=DEFLATE")
       }
       
       outStack[[thisVarInd]] <- extrapRas
     }
     
-    png(file.path(outFolder, paste0("cm_gdm_extrapolation_ALL_covariates.png")),
+    grDevices::png(file.path(outFolder, paste0("cm_gdm_extrapolation_ALL_covariates.png")),
         width = 1024, height = 1024)
     plot(sum(outStack), main = "Type 1: Good cells (no extrap.)")
-    dev.off()
+    grDevices::dev.off()
     
-    terra::writeRaster(extrapRas, "cm_gdm_extrapolation_ALL_covariates.tif", gdal = "COMPRESS=DEFLATE")
+    terra::writeRaster(extrapRas, "cm_gdm_extrapolation_ALL_covariates_no_extrapolation.tif", gdal = "COMPRESS=DEFLATE")
   }
   else
   {
@@ -90,19 +101,19 @@ cm_show_extrapolation <- function(thisExperiment,
       
       testRas <- terra::classify(covarStack[[thisVarInd]], reclassMat, othersNA = TRUE)
       
-      png(file.path(outFolder, paste0("cm_gdm_extrapolation_", covarNames[thisVarInd]), ".png"),
+      grDevices::png(file.path(outFolder, paste0("cm_gdm_extrapolation_", covarNames[thisVarInd]), "_no_extrapolation.png"),
           width = 1024, height = 1024)
       plot(extrapRas, main = paste0("Good cells: ", covarNames[thisVarInd]))
-      dev.off()
+      grDevices::dev.off()
       
       outStack[[thisVarInd]] <- testRas
     }
     
-    png(file.path(outFolder, paste0("cm_gdm_extrapolation_IMPORTANT_covariates.png")),
+    grDevices::png(file.path(outFolder, paste0("cm_gdm_extrapolation_IMPORTANT_covariates.png")),
         width = 1024, height = 1024)
     plot(sum(outStack[[theseVarInd]]), main = "Type 2: Good cells (no extrap.)")
-    dev.off()
+    grDevices::dev.off()
     
-    terra::writeRaster(extrapRas, "cm_gdm_extrapolation_IMPORTANT_covariates.tif", gdal = "COMPRESS=DEFLATE")
+    terra::writeRaster(extrapRas, "cm_gdm_extrapolation_IMPORTANT_covariates_no_extrapolation.tif", gdal = "COMPRESS=DEFLATE")
   }
 }

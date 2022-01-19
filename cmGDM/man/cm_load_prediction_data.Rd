@@ -24,7 +24,7 @@ cm_load_prediction_data(
 \item{trace}{Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise}
 }
 \value{
-
+Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment}
 }
 \description{
 Load metadata for GIS layers to be used to predict dissimilarities between sites/samples under different environmental conditions. Checks are made to ensure that the prediction data matches the covariates used to fit a GDM

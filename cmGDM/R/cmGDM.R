@@ -5,10 +5,14 @@
 #' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
-#' @import terra
-#' @import png
+#' @importFrom terra classify ext extract rast values writeRaster
 #' @importFrom ggpubr ggarrange
 #' @importFrom stringr str_pad
+#' @importFrom grDevices dev.off png
+#' @importFrom utils read.table
+#' @importFrom raster stack
+#' @importFrom methods is
+#' @importFrom stats na.omit
 #' @docType package
 #' @name cmGDM
 NULL

@@ -19,7 +19,9 @@ Imports:
  stringr,
  gdm,
  ggplot2,
- ggpubr
+ ggpubr,
+ png,
+ magrittr
 Depends:
  R (>= 4.1)
 RoxygenNote: 7.1.2

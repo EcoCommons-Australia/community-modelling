@@ -14,7 +14,7 @@ cm_performance_plots(thisExperiment, outFolder = "", showVarImp = "all")
 \item{showVarImp}{Character. Control which set of variable contribution plots are created: "all" generates all plots; "nonzero" generates only plots for variables with a variable importance score greater than zero}
 }
 \value{
-
+Nothing
 }
 \description{
 Create three types of performance evaluation plot for a fitted GDM: observed v predicted dissimilarity, ecological distance v observed dissimilarity, and variable contribution plots

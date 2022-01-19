@@ -36,7 +36,7 @@ cm_load_community_data(
 \item{trace}{Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise}
 }
 \value{
-cm_experiment object with updated fields
+Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment}
 }
 \description{
 The data table loaded by this function represents the response or dependent variable to be modelled as a function of one or more ecological covariates.
@@ -45,9 +45,4 @@ The data table loaded by this function represents the response or dependent vari
 Data may be in the form of a presence-absence table, abundance data, or a pre-computed dissimilarity matrix.
 
 Terminology used in the literature is variable: these data may be called the 'biological' data, 'ecological' data, or 'community' data to be modelled.
-}
-\examples{
-\dontrun{
-
-}
 }

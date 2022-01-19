@@ -7,7 +7,7 @@
 #' @param thisExperiment cm_experiment object. Experiment object storing a successfully fitted GDM
 #' @param outFile Character. File name (with full path) into which the summary will be written. Default of "" means no file will be written
 #'
-#' @return
+#' @return Nothing
 #' @export
 #'
 #' @examples

@@ -18,12 +18,14 @@
 #' @param dissimMeasure Character. The type of dissimilarity measure stored in the file named in \emph{bioFilename} when \emph{dataType} is "Dissimilarity". For \emph{Presence-absence} and \emph{Abundance} data, this will be the dissimilarity measure computed from the data table
 #' @param trace Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise
 #'
-#' @return cm_experiment object with updated fields
+#' @return Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment}
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' 
+#' thisExperiment <- cm_load_community_data(thisExperiment, bioFilename = "my_new_data.csv",
+#'                                          dataType = "Presence_absence",
+#'                                          dissimMeasure = "Bray-Curtis)
 #' }
 cm_load_community_data <- function(thisExperiment = NULL,
                                    bioFilename = NULL,
@@ -94,7 +96,7 @@ cm_load_community_data <- function(thisExperiment = NULL,
     
     if (is.null(thisDelim)) stop(paste("fileType =", fileType, "but a sensible delimiter could not be found"))
     
-    tryCatch({bioData <- read.table(bioFilename, header = TRUE, sep = thisDelim, stringsAsFactors = FALSE)})
+    tryCatch({bioData <- utils::read.table(bioFilename, header = TRUE, sep = thisDelim, stringsAsFactors = FALSE)})
   }
   else
   {

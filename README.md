@@ -1,3 +1,6 @@
+---
+output: html_document
+---
 # Community Modelling Workflow
 
 ## Generalised Dissimilarity Modelling (GDM)
