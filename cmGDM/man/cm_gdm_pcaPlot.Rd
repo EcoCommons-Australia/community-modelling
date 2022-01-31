@@ -4,26 +4,50 @@
 \alias{cm_gdm_pcaPlot}
 \title{GDM PCA plot of scaled covariates}
 \usage{
-cm_gdm_pcaPlot(thisExperiment, outFolder = "", trace = FALSE)
+cm_gdm_pcaPlot(
+  thisExperiment,
+  covarSrc = "train",
+  outFolder = "~/cmGDM/",
+  trace = FALSE
+)
 }
 \arguments{
 \item{thisExperiment}{Object of class 'cm_experiment'}
 
-\item{outFolder}{Character (string). Path of a folder into which the output GIS layer and PNG image will be written}
+\item{covarSrc}{Character string. Which covariate data set should be used to test for extrapolation? Default is "train', i.e. the data set used to fit or 'train' the GDM. Alternative is 'predict', which uses the prediction data set after first check that it has been uploaded by the user}
 
-\item{trace}{Logical. Produce console messages? Default is FALSE}
+\item{outFolder}{Character string. Path of a folder into which the output GIS layer and PNG image will be written}
+
+\item{trace}{Logical. Produce console messages? Default is FALSE, so we typically go quietly into the digital night}
 }
 \value{
-Nothing
+Nothing but has side-effect of saving image and GIS raster files to the user's project folder for the experiment
 }
 \description{
 Produce a raster map colour-coded using the first three components of a Principal Component Analysis (PCA) of scaled covariates. Grid cells with the similar colours represent cells with the same combination of scaled environmental variables and therefore similar predicted community composition.
 }
 \details{
-Both graphics output (as a PNG-formatted image) and a GeoTIFF raster are output.
+Output is (1) a PNG-formatted image and a companion 'wld' world coordinate file which allows the PNG image to be loaded into a GIS program as a raster layer, and (2) a 3-band geoTIFF raster file for use GIS programs and map production using R (e.g. tmap package).
 }
 \examples{
 \dontrun{
-cm_gdm_pcaPlot(myExperiemnt, outFolder = "exprimentResults")
+
+## Produce plots:
+cm_gdm_pcaPlot(myExperiment)
+
+## A simple map using package tmap:
+library(raster)
+library(tmap)
+## Path to geoTIFF in EcoCommons project folder - change as needed
+## if the tif file was downloaded and stored in a local folder:
+tiffFile <- paste0("cmGDM_", thisExperiment$experimentName, "_GDM_transformed_PCA.tif")
+rr <- raster::stack(paste0(path.expand(outFolder), thisExperiment$experimentName, "/", tiffFile)
+theMap <- tmap::tm_shape(rr) +
+tm_graticules(lines = FALSE, ticks = TRUE) +
+  tm_xlab("Longitude") +
+  tm_ylab("Latitude") +
+  tm_rgb(r = 1, g = 2, b = 3, interpolate = FALSE)
+
+print(theMap)
 }
 }

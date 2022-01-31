@@ -9,6 +9,7 @@ cm_load_prediction_data(
   src_folder = "",
   pred_filenames = "",
   label = "",
+  outFolder = "~/cmGDM/",
   trace = FALSE
 )
 }
@@ -21,13 +22,15 @@ cm_load_prediction_data(
 
 \item{label}{Character. An optional human-friendly label for the project's environmental data}
 
+\item{outFolder}{Character. Path to user's experiment folder}
+
 \item{trace}{Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise}
 }
 \value{
-Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment}
+Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment} and saves a copy to the user's project folder for the experiment
 }
 \description{
-Load metadata for GIS layers to be used to predict dissimilarities between sites/samples under different environmental conditions. Checks are made to ensure that the prediction data matches the covariates used to fit a GDM
+Load covariate data from GIS layers to be used to predict dissimilarities between sites/samples under different environmental conditions. Checks are made to ensure that the prediction data matches the covariates used to fit a GDM
 }
 \examples{
 \dontrun{

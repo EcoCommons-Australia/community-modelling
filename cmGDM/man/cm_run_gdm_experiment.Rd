@@ -4,15 +4,24 @@
 \alias{cm_run_gdm_experiment}
 \title{Run Community Modelling GDM experiment}
 \usage{
-cm_run_gdm_experiment(thisExperiment, trace = FALSE)
+cm_run_gdm_experiment(
+  thisExperiment,
+  outFolder = "~/cmGDM/",
+  includeGeo = FALSE,
+  trace = FALSE
+)
 }
 \arguments{
-\item{thisExperiment}{Character. Name of this experiment}
+\item{thisExperiment}{cm_experiment. Object for the current experiment}
+
+\item{outFolder}{String. Path to the experiment output folder}
+
+\item{includeGeo}{Logical. Should geographical distance between sites/samples be added as a covariate?}
 
 \item{trace}{Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise}
 }
 \value{
-cm_experiment object with updated fields
+cm_experiment object with updated fields with side-effect of saving the updated cm_experiment object to the user's experiment folder
 }
 \description{
 Experiments can only be run when all preceding steps in the workflow have been successfully completed.

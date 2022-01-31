@@ -6,13 +6,16 @@
 \usage{
 cm_show_extrapolation(
   thisExperiment,
+  covarSrc = "train",
   showVarImp = c("all", "important"),
   allPlots = FALSE,
-  outFolder = ""
+  outFolder = "~/cmGDM/"
 )
 }
 \arguments{
 \item{thisExperiment}{cm_experiment object. The experiment with a fitted GDM to be processed}
+
+\item{covarSrc}{Character string. Which covariate data set should be used to test for extrapolation? Default is "train', i.e. the data set used to fit or 'train' the GDM. Alternative is 'predict', which uses the prediction data set after first check that it has been uploaded by the user}
 
 \item{showVarImp}{Character string. Show extrapolation for all covariates presented to model fitting ("all"), or just those with variable importance > 0 ("important")}
 
@@ -27,7 +30,7 @@ Nothing
 Models applied to covariate values outside the range used to fit the model cannot be trusted.
 }
 \details{
-EXTRREME caution is required when interpreting results in areas where extrapolation has occurred.
+EXTREME caution is required when interpreting results in areas where extrapolation has occurred.
 
 This function identifies the regions where extrapolation has occurred, and outputs PNG and geoTIFF files showing grid cells within which extrapolation has NOT occurred (i.e. "good" cells)
 }
@@ -38,5 +41,8 @@ cm_show_extrapolation(myExperiment, showVarImp = "all")
 
 # Show areas with No extrapolation but only for IMPORTANT variables
 cm_show_extrapolation(myExperiment, showVarImp = "important")
+
+# Show extrapolation for important varaible using hte prediction data set
+cm_show_extrapolation(myExperiment, covarSrc = "predict", showVarImp = "important")
 }
 }

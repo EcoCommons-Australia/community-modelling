@@ -7,11 +7,11 @@
 cm_bad_experiment_msg(thisExperiment)
 }
 \arguments{
-\item{thisExperiment}{A cm_experiment object}
+\item{thisExperiment}{A cm_experiment object created by a call to \link{cm_create_new_experiment} and updated by each step in the workflow}
 }
 \value{
-A character string representing a composite error message detailing all errors found by examining the status field of the cm_experiment object
+A character string representing a composite error message detailing all errors found by examining the \emph{status} field of the cm_experiment object
 }
 \description{
-Compose an error message
+Prepare a multi-part message informing the user of reasons for failure to allow a requested action such as fitting a GDM using a cm_experiment object
 }

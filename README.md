@@ -1,31 +1,33 @@
 ---
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 # Community Modelling Workflow
 
-## Generalised Dissimilarity Modelling (GDM)
+# Generalised Dissimilarity Modelling (GDM)
 
-### About this document
+## About this document
 
-Generalised Dissimilarity Modelling (GDM) has become a widely-used method to link differences in composition between samples and explanatory environmental variables ("covariates"). GDMs may be fitted using any assemblage of covariates thought to be important in explaining the differences in composition between pairs of samples. Geographical distance can be optionally included as a covariate to account for "isolation by distance" (IBD) effects.
+Generalised Dissimilarity Modelling (GDM) has become a widely-used method to link differences in composition between samples and explanatory environmental variables ("covariates"). The dependent or predicted variable in a GDM may be any form of distance or dissimilarity measure scaled to range between 0 and 1. GDMs may be fitted using any assemblage of covariates thought to be important in explaining the differences in composition between pairs of samples. Geographical distance can be optionally included as a covariate to account for distance-decay or "isolation by distance" (IBD) effects.
 
-This document provides an outline of a prototype R-package, _cmGDM_,  which is designed to implement GDM modelling as the first method within a new EcoCommons Community Modelling module. Fitting a GDM is performed by the R-package _gdm_ available from the CRAN repository. _cmGDM_ has been designed to implement a simple, robust workflow for basic fitting, review and reporting of GDMs.
+This document provides an outline of a prototype _R_-package, _cmGDM_,  which is designed to implement GDM modelling as the first method within a new EcoCommons Community Modelling module. Fitting a GDM is performed by the _R_-package _gdm_ available from the CRAN repository. _cmGDM_ has been designed to implement a simple, robust workflow for basic fitting, review and reporting of GDMs.
 
-**This document describes the state of development and testing of the R-package _cmGDM_ as at 30 November 2021.**
+**This document describes the state of development and testing of the R-package _cmGDM_ as at 30 January 2022.**
 
-### Design concepts and principles
+## Design concepts and principles
 
 **1. One streamlined protocol for data collation & upload**
 
-The R-package _gdm_ provides a preparatory function, _formatsitepair()_, which allows users to present data components in four formats which are then compiled into a data table used by the function _gdm()_ to fit the model. Although this flexibility is suitable for experienced R users, it can be very challenging for casual users to make appropriate choices among numerous possible combinations, and prepare data components in the required formats.
+The _R_-package _gdm_ provides a preparatory function, _formatsitepair()_, which allows users to present data components in four formats, or "bioformats" in _gdm_ terminology, which are then compiled into a data table used by the function _gdm()_ to fit the model. Although this flexibility is suitable for experienced _R_ users, it can be very challenging for casual users to make appropriate choices among numerous possible combinations, and prepare data components in the required formats.
 
-The path to data importation chosen during the development of this R-package is to follow procedures referred to as bioformat = 3 in the _gdm_ package.
+The four formats represent different combinations of pre-processed fundamental data tables needed to fit a GDM. The concept implemented in _cmGDM_ is to begin with basic table formats and generate pre-processed or derived tables by asking users to supply necessary information. For example, users will be asked to load community data as either a presence-absence table, an abundance table, or a dissimilarity table. In the first two table types, they are standard tables which may be assembled by hand (in spreadsheets for example) or output by functions in other _R_-packages. For dissimilarity tables, many functions in other R-packages can produce dissimilarity tables including the _R_-package _vegan_, and several packages for analysing phylogenetic and population genetic data.
 
-There are four versions or "bioformats" but they represent different combinations of pre-processed fundamental data tables needed to fit a GDM. The concept implemented in _cmGDM_ is to begin with basic table formats and generate pre-processed or derived tables by asking users to supply necessary information. For example, users will be asked to load community data as either a presence-absence table, an abundance table, or a dissimilarity table. In the first two table types, they are standard tables which may be assembled by hand (in spreadsheets for example) or output by functions in other R-packages. For dissimilarity tables, many functions in other R-packages can produce dissimilarity tables including the packages _vegan_ and several packages for analysing phylogenetic and population genetic data.
+> The path to data importation chosen during the development of _cmGDM_ is to follow procedures referred to as "bioformat = 3" in the _gdm_ package.
 
 The expected advantages of this approach include:
 
-- Users can easily assemble necessary data tables for each data component in which ever application they feel comfortable using (typically, a spreadsheet application)
+- Users can easily assemble necessary tables for each data component using any application with which they feel comfortable (typically, a spreadsheet application)
 
 - More robust data checking is possible enabling better guidance and support to users who need additional assistance
 
@@ -33,7 +35,9 @@ The expected advantages of this approach include:
 
 **2. Staged data entry**
 
-Implementation of the data entry steps in the prototype workflow is based on the idea of staged data entry. That is, users are asked to step through a sequence of uploading each data component. Feedback on errors encountered at each step is provided and progress to the next step is only possible when data quality checks have been passed for the current step.
+Implementation of the data entry steps in the prototype workflow is based on the idea of staged data entry. That is, users are asked to step through a sequence of uploading each data component.
+
+This approach is appropriate because of ordered chains of dependencies. For example, a basic requirement is that site/sample labels associated with geographical coordinates match those used in the community ("biological") data table. Feedback on errors encountered at each step is provided and progress to the next step is only possible when data quality checks have been passed for the current step.
 
 **3. Intercept data format errors**
 
@@ -41,23 +45,23 @@ As mentioned above, data entry problems are intercepted at each step through the
 
 **4. Flexible data file formats**
 
-EcoCommons users have a wide range of skills and experience in preparing and manipulating data required for model fitting. More experienced users, particularly those users with good _R_ skills, will be able to load data into an _R_ session from a range of formats (e.g. Excel spreadsheet, comma-separated value or csv file, etc), re-organise and export data to a variety of formats suitable for use in fitting a GDM. Existing modelling modules in EcoCommons permit only the uploading of csv-formatted text files as data tables. A design decision taken in developing the prototype _R_-package _cmGDM_ was allowing users to upload data tables in a wide selection of standard data file types. This is easily implemented in _R_ because of the very extensive list of _R_-packages available in the CRAN repo which cater for many file formats.
+EcoCommons users have a wide range of skills and experience in preparing and manipulating data required for model fitting. More experienced users, particularly those users with good _R_ skills, will be able to load data into an _R_ session from a range of formats (e.g. Excel spreadsheet, comma-separated value or csv file, etc), re-organise and export data to a variety of formats suitable for use in fitting a GDM. Existing modelling modules in EcoCommons permit only the uploading of csv-formatted text files as data tables. A design decision taken in developing the prototype _R_-package _cmGDM_, was allowing users to upload data tables in a wide selection of standard data file types. This is easily implemented in _R_ because of the very extensive list of _R_-packages available in the CRAN repository which cater for many file formats.
 
-The file formats currently implemented include:
+The file formats currently supported by _cmGDM_ include:
 
 - comma-separated value (csv) text files
-- TAB-separated text files
-- space-separated (tsv) text files
+- TAB-separated (tsv) text files
+- space-separated text files
 - openDocument (ods) format spreadsheets
 - Excel spreadsheets (xls & xlsx) spreadsheets
 
-For both spreadsheet types, users can select the sheet within a multi-sheet document (more correctly referred to as a 'workbook') by sheet number or name as this is a parameter available in the functions called from relevant packages to import spreadsheets.
+For spreadsheets, users can select the sheet within a multi-sheet document (more correctly referred to as a 'workbook') by sheet number or name as this is a parameter available in the functions called from relevant packages to import spreadsheets.
 
 **5. Loosely OO design**
 
 A major design choice in the prototype package _cmGDM_ was to use an object-oriented approach as much as possible. The package implements a simple S3 object of class "cm_experiment" which embodies the staged approach to data collation and quality checking. 
 
-### Test Data set and testing process
+## Test Data set and testing process
 
 An important aspect of implementing a flexible data entry front-end is rigorous testing of the many combinations or data states likely to be encountered in use. A test data suite was developed to facilitate comprehensive testing during development.
 
@@ -69,9 +73,9 @@ File names reflect the error condition contained within each file (where _error 
 
 #### Test procedure
 
-A set of R-scripts is provided in the folder _test_scripts_ to run through a tests for each data entry script. Naturally, they assume that package _cmGDM_ has been downloaded and installed.
+A set of _R_-scripts is provided in the folder _test_scripts_ to run through a tests for each data entry script. Naturally, they assume that package _cmGDM_ has been downloaded and installed.
 
-Because a trapped error invokes the __stop()__ function, running each test involves highlighting the appropriate lines and then clicking on the "Run" option in R-Studio. An error-checking test is expected to emit the appropriate error message to the R-console.
+Because a trapped error invokes the __stop()__ function, running each test involves highlighting the appropriate lines and then clicking on the "Run" option in _R_-Studio. An error-checking test is expected to emit the appropriate error message to the _R_-console.
 
 Running the "OK" test should emit no message - just a return to the command prompt. Typing `thisExperiment$status` on the command line will show that the status flag for the data component under test is __TRUE__. For example, immediately after instantiating a new experiment object we will see the following:
 
@@ -93,82 +97,205 @@ After successfully loading site/sample data, we expect to see the following:
              TRUE             FALSE             FALSE             FALSE             FALSE 
 ```
 
-The workflow follows the sequence left to right along the _status_ vector. Progression depends on successful completion of the preceding step with the exception that a GDM model can be fitted (by a call to _cm_run_gdm_experiment()_) immediately after a successful call to _cm_load_covars()_. Prediction covariates are only needed when a fitted GDM is being "projected" (i.e. used to make predictions). At the time of writing, that function has not been written although the function _cm_load_prediction_data()_ has been written and tested.
+The workflow follows the sequence left to right along the _status_ vector. Progression depends on successful completion of the preceding step with the exception that a GDM model can be fitted (by a call to _cm_run_gdm_experiment()_) which sets 'modelFit_OK' to TRUE) immediately after a successful call to _cm_load_covars()_. Prediction covariates are only needed when a fitted GDM is being "projected" (i.e. used to make predictions) using a covariate set not used to fit the model. Two typical prediction situations are: (a) predicting composition at all grid cells covering a study area (note that a GDM is fitted only to environmental conditions at sites/sample locations); and (b) predicting changes in composition related to climate change either at the sites/sample locations used to fit the GDM or in grid cells covering a study region. At the time of writing, that function has not been written although the function _cm_load_prediction_data()_ has been written and tested.
+
+## Integration into EcoCommons framework
+
+Info supplied by user or uploaded by user, plus messages back to the user, is considered here. See source code for the _R_ data structure below..
+
+### Data expected to be supplied by UI
+
+|  field    |  data type   |  role |
+|  :--      | :--          |  :--  |
+| userID    | string       | Unique EcoCommons user ID |
+| userName  | string       | Username (ID for humans)  |
+| experimentName  | string | User-supplied meaningful name for the experiment |
+| description  | string    | User-supplied description of the experiment|
+| includeGeo  | logical | Will this experiment include geographic distance as a covariate? |
+|           |              |       |
+| data\$siteData\$srcFile | string  | File name of the site data table |
+| data\$siteData\$siteCol   | string             |  index to the column storing site name or labels (maybe supplied as a column name or integer representing col number converted to string)     |
+| data\$siteData\$longitudeCol  | string             | index to the column storing longitude of sites (maybe supplied as a column name or integer representing col number converted to string) |
+| data\$siteData\$latitudeCol  | string             | index to the column storing latitude of sites (maybe supplied as a column name or integer representing col number converted to string) |
+| data\$siteData\$dataTable  |  _R_ data.frame            | Site data table      |
+|           |              |       |
+| data\$biologicalData\$srcFile | string             |       |
+| data\$biologicalData\$fileType | string             | Which of the accepted file types is to be uploaded? Expected val;ues incl. '', ''     |
+| data\$biologicalData\$sheet |  string            | Label for the sheet in data file when 'dataType' == '' |
+| data\$biologicalData\$siteCol | string             | Column in 'dataTable' storing the site/sample labels |
+| data\$biologicalData\$dataType | string             | String representing the 'absence' state when 'dataType' == '' |
+| data\$biologicalData\$presenceMarker | string             |       |
+| data\$biologicalData\$absenceMarker | string             | String representing the 'absence' state when 'dataType' == ''     |
+| data\$biologicalData\$dissimMeasure          | string             | Dissimilarity measure used to generate 'dissimMatrix'  |
+| data\$biologicalData\$dataTable          | _R_ data.frame             | Stores raw community table supplied by the user      |
+| data\$biologicalData\$dissimMatrix          | _R_ numeric matrix | If dataType == 'Dissimilarity', stores uploaded dissimilarity matrix. Otherwise, stores result of applying 'dissomMeasure' to 'dataTable'.      |
+|           |              |       |
+| data\$covarData\$srcFolder |              | string      |
+| data\$covarData\$filenames |              | string vector      |
+| data\$covarData\$label  |              | string      |
+| data\$covarData\$covarNames          | string vector             |       |
+| data\$covarData\$dataTable          | _R_ numeric matrix             |       |
+|           |              |       |
+| data\$predictionData\$srcFolder | string             |       |
+| data\$predictionData\$label     | string             |       |
+| data\$predictionData\$covarNames | string vector |       |
+| data\$predictionData\$dataTable | _R_ numeric matrix |       |
 
 
+The following panel shows the source-code used to create the data structure of a _cm_experiment_ S3 object. Note that a number of fields are populated by _R_ code and are not solicited from the user via the GUI. These include:
 
-### A worked example
+- data table structures storing derived data (e.g. a dissimilarity matrix created by function _cm_load_community_data_ when the user has uploaded a presence-absence community table and asked for the Bray-Curtis dissimilarity measure to be computed)
 
-A small set of data files has also been included in the folder _worked_example_. An R-script is included to run the complete workflow, but of course each step can be run from the command line if desired.
+- values stored in the "status"" vector which are updated by each _cm_load_XXXXX_ function upon successful uploading and processing of a data component
+
+- date fields which are likewise updated by code (e.g. dateCreated, dateDataUpdated, etc.)
+
+- data structures generated by a successful GDM fit and subsequent post-fit processing (e.g. the 'model' component)
+
+
+```
+  # Create (instantiate) a community modelling S3 object
+  statusVec <- vector(length = 5) # type is "logical" by default
+  names(statusVec) <- c("siteData_OK", "biologicalData_OK",
+                        "covarData_OK", "predictionData_OK", "modelFit_OK")
+  
+  thisExperiment <- list(userID = userID,
+                         userName = userName,
+                         experimentName = experimentName,
+                         dateCreated = as.character(Sys.Date()),
+                         dateDataUpdated = "",
+                         dateLastModelRun = "",
+                         description = description,
+                         status = statusVec,
+                         includeGeo = FALSE,
+                         data = list(siteData = list(srcFile = "",
+                                                     siteCol = "",
+                                                     longitudeCol = "",
+                                                     latitudeCol = "",
+                                                     dataTable = data.frame()),
+                                     biologicalData = list(srcFile = "",
+                                                           fileType = "",
+                                                           sheet = "",
+                                                           siteCol = "",
+                                                           dataType = "",
+                                                           presenceMarker = "1",
+                                                           absenceMarker = "0",
+                                                           dissimMeasure = "",
+                                                           dataTable = data.frame(),
+                                                           dissimMatrix = matrix()),
+                                     covarData = list(srcFolder = "",
+                                                      filenames = "",
+                                                      label = "",
+                                                      covarNames = "",
+                                                      covarSiteMin = numeric(),
+                                                      covarSiteMax = numeric(),
+                                                      covarExtentMin = numeric(),
+                                                      covarExtentMax = numeric(),
+                                                      dataTable = matrix()),
+                                     predictionData = list(srcFolder = "",
+                                                           filenames = "",
+                                                           label = "",
+                                                           covarNames = "",
+                                                           covarSiteMin = numeric(),
+                                                           covarSiteMax = numeric(),
+                                                           covarExtentMin = numeric(),
+                                                           covarExtentMax = numeric(),
+                                                           dataTable = matrix()),
+                                     sitepair = data.frame()),
+                         model = list(gdm = list(),
+                                      varImp = list(),
+                                      perfSummary = list()))
+  
+  class(thisExperiment) <- c("cm_experiment", class(thisExperiment))
+```
+
+
+## A worked example
+
+A small set of data files has also been included in the folder _worked_example_. An _R_-script is included to run the complete workflow, but of course each step can be run from the command line if desired.
 
 The worked example illustrates the workflow to fit a very basic GDM.
+
+
 
 Successful completion of the worked example should result in the following output in the console when the function _cm_gdm_summary()_ is called:
 
 ```
-> cm_gdm_summary(dataTestExp2)
+> cat(cmGDM::cm_gdm_summary(gdmObj))
 -----------------------------------------------
 EcoCommons Community Modelling Module
 GDM Model Summary
 -----------------------------------------------
 
-Experiment name: Test with RF refugia data
-Run date: 2021-11-29
+Experiment name: RF_Refugia_GDM_Argyrodendron_trifoliolatum
+Run date: 2022-01-30
 
-Number of sites/samples: 703
+Number of site/sample pairs: 120
 
 Covariates:
-  Geographical distance included: Yes
-  Covariates: Number used = 20
-    CHELSA_bio01
-    CHELSA_bio02
-    CHELSA_bio03
-    CHELSA_bio04
-    CHELSA_bio05
-    CHELSA_bio06
-    CHELSA_bio07
-    CHELSA_bio08
-    CHELSA_bio09
-    CHELSA_bio10
-    CHELSA_bio11
-    CHELSA_bio12
-    CHELSA_bio13
-    CHELSA_bio14
-    CHELSA_bio15
-    CHELSA_bio16
-    CHELSA_bio17
-    CHELSA_bio18
-    CHELSA_bio19
-    Geographic
+  Geographical distance included: No
+  Covariates: Number used = 26
+    aspect
+    bio01
+    bio02
+    bio03
+    bio04
+    bio05
+    bio06
+    bio07
+    bio08
+    bio09
+    bio10
+    bio11
+    bio12
+    bio13
+    bio14
+    bio15
+    bio16
+    bio17
+    bio18
+    bio19
+    clay
+    sand
+    silt
+    slope
+    TPI
+    TWI
 
 Model performance:
-
-  Model deviance: 19.39
-  Explained deviance: 6.83 (35.21%)
-  NULL deviance: 20.81
+      Model deviance: 0.36
+  Explained deviance: 78.91%
+       NULL deviance: 1.69
+          Interecept: 0.045
 
 Covariate importance:
-    Covariate       % Contrib.
+    Covariate       Contrib.
     ------------    -----------
-      Geographic     0.00
-    CHELSA_bio01     0.00
-    CHELSA_bio02     0.00
-    CHELSA_bio03     0.00
-    CHELSA_bio04    28.44
-    CHELSA_bio05     0.00
-    CHELSA_bio06     7.74
-    CHELSA_bio07     0.00
-    CHELSA_bio08     2.86
-    CHELSA_bio09    36.61
-    CHELSA_bio10     0.00
-    CHELSA_bio11     0.00
-    CHELSA_bio12    12.36
-    CHELSA_bio13     0.00
-    CHELSA_bio14     0.00
-    CHELSA_bio15     0.00
-    CHELSA_bio16     0.00
-    CHELSA_bio17     0.00
-    CHELSA_bio18    11.99
-    CHELSA_bio19     0.00
+        aspect          7.00
+         bio01          0.00
+         bio02          0.00
+         bio03          0.00
+         bio04          0.36
+         bio05          0.00
+         bio06          0.00
+         bio07          0.00
+         bio08          0.00
+         bio09          0.00
+         bio10          0.00
+         bio11          0.20
+         bio12          0.00
+         bio13          0.03
+         bio14          0.02
+         bio15          0.04
+         bio16          0.00
+         bio17          0.00
+         bio18          0.00
+         bio19          0.00
+          clay         84.07
+          sand          0.00
+          silt          3.46
+         slope          0.00
+           TPI          0.00
+           TWI          0.00
 > 
 ```

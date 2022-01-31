@@ -4,12 +4,16 @@
 \alias{cm_performance_plots}
 \title{GDM performance plots}
 \usage{
-cm_performance_plots(thisExperiment, outFolder = "", showVarImp = "all")
+cm_performance_plots(
+  thisExperiment,
+  outFolder = "~/cmGDM/",
+  showVarImp = "all"
+)
 }
 \arguments{
 \item{thisExperiment}{cm_experiment object. An experiment object storing a successfully fitted GDM}
 
-\item{outFolder}{Character. Full path to a folder into which image files will be written}
+\item{outFolder}{Character. Path to user's experiment folder}
 
 \item{showVarImp}{Character. Control which set of variable contribution plots are created: "all" generates all plots; "nonzero" generates only plots for variables with a variable importance score greater than zero}
 }

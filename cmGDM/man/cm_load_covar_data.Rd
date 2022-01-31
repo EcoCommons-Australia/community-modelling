@@ -8,7 +8,11 @@ cm_load_covar_data(
   thisExperiment,
   src_folder = "",
   covar_filenames = "",
+  covar_filename = "",
+  siteCol = 1,
+  sheet = 1,
   label = "",
+  outFolder = "~/cmGDM/",
   trace = FALSE
 )
 }
@@ -19,15 +23,28 @@ cm_load_covar_data(
 
 \item{covar_filenames}{Character vector. Vector giving the names of the files in src-folder to be used as covariates in this experiment}
 
+\item{covar_filename}{string. Name of a single data file containing tabulated covariate data}
+
+\item{siteCol}{Integer or string. Column in table when a single table is being loaded which stores site/sample names}
+
+\item{sheet}{Integer or string. Name or index to sheet within a spreadsheet/workbook}
+
 \item{label}{Character. An optional human-friendly label for the project's environmental data}
+
+\item{outFolder}{Character. Path to user's experiment folder}
 
 \item{trace}{Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise}
 }
 \value{
-Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment}
+Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment} with side-effect of saving the updated object to the user's experiment folder
 }
 \description{
-Load Covariate Data
+Covariate (environmental or ecological) data required to fit the GDM is loaded by the user supplying either (a) a path to a folder of GIS raster layers, or (b) a table of pre-assembled environmental values at the site/sample locations.
+}
+\details{
+For option (a), the function will load and store the data for the full geographical extent of the rasters, and extract and store a table of environmental data at the site/sample locations present in the site data section of the cm_experiment object passed in \emph{thisExperiment}. The raster data may be used for predicting across the full geographical extent when a model is fitted (e.g. using \link{cm_load_prediction_data}) or for other analyses (e,g, using \link{cm_gdm_pcaPlot} or \link{cm_show_extrapolation}).
+
+For option (b), the table is stored in the covariate data section of the cm_experiment object passed in \emph{thisExperiment}. Modelling fitting may proceed by a call to \link{cm_run_gdm_experiment}, but options for further analyses are extremely limited until rasters are loaded, or a prediction data set is loaded by calling \link{cm_load_prediction_data}.
 }
 \examples{
 \dontrun{

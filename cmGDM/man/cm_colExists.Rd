@@ -4,7 +4,7 @@
 \alias{cm_colExists}
 \title{Utility function to check if column exists}
 \usage{
-cm_colExists(colLabel, colNames)
+cm_colExists(colLabel, colNames, UIname)
 }
 \arguments{
 \item{colLabel}{Character string or integer. Name or index number of the column (or variable, covariate, etc) whose existence is being checked}

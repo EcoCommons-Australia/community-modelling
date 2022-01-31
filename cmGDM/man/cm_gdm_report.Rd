@@ -4,20 +4,30 @@
 \alias{cm_gdm_report}
 \title{GDM report}
 \usage{
-cm_gdm_report(thisExperiment, outFile = "", format = "pdf")
+cm_gdm_report(
+  thisExperiment,
+  outFolder = "~/cmGDM/",
+  format = "pdf",
+  trace = FALSE
+)
 }
 \arguments{
-\item{thisExperiment}{cmGDM object}
+\item{thisExperiment}{cm_experiment. A cm_experiment object to be used to generate the report}
 
-\item{outFile}{Character. Name of the file (including a fully specified path) to which outpout will be written.}
+\item{outFolder}{String. Base path to which output will be written.}
 
-\item{format}{Character. Report format to be used. Default is "pdf". Other optioins are "word" and "html".}
+\item{format}{String. Report format to be used. Default is "pdf" which is the only formatted implement at present. Other options will include "word" and "html".}
+
+\item{trace}{Logical. Produce hopefully diagnostic messages. Default is to remain silent.}
 }
 \value{
-Nothing
+Nothing but with a side-effect of saving the report pdf to the project folder
 }
 \description{
-GDM report
+A pdf file is produced documenting the outcomes of the model fitted using the cm_experiment passed in \emph{thisExperiment}.
+}
+\details{
+Note that all graphical elements included in the report are also separately stored in the user's project folder for the experiment, and are therefore \emph{potentially} downloadable so that the user may incorporate them in other documents such as reports or theses.
 }
 \examples{
 \dontrun{

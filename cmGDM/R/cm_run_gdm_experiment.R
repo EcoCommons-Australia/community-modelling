@@ -3,10 +3,12 @@
 #'
 #' Experiments can only be run when all preceding steps in the workflow have been successfully completed.
 #' 
-#' @param thisExperiment Character. Name of this experiment
+#' @param thisExperiment cm_experiment. Object for the current experiment
+#' @param outFolder String. Path to the experiment output folder
+#' @param includeGeo Logical. Should geographical distance between sites/samples be added as a covariate?
 #' @param trace Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise
 #'
-#' @return cm_experiment object with updated fields
+#' @return cm_experiment object with updated fields with side-effect of saving the updated cm_experiment object to the user's experiment folder
 #' @export
 #'
 #' @examples
@@ -16,16 +18,24 @@
 #' 
 #' }
 cm_run_gdm_experiment <- function(thisExperiment,
+                                  outFolder = "~/cmGDM/",
+                                  includeGeo = FALSE,
                                   trace = FALSE)
 {
   numCores <- 10
   
+  if (!("cm_experiment" %in% class(thisExperiment)))
+    stop("Object passed in 'thisExperiment' must be class cm_experiment")
   
   # Test for minimum data ensemble to fit a GDM
   if (!all(thisExperiment$status[c("siteData_OK", "biologicalData_OK",
                                    "covarData_OK")]))
     stop(paste("Sorry human, I cannot run your experiment. You must fix these issues:\n",
                cm_bad_experiment_msg(thisExperiment)))
+  
+  # Make/check path for output for this experiment
+  outFolder <- paste0(path.expand(outFolder), thisExperiment$experimentName)
+  if (!dir.exists(outFolder)) dir.create(outFolder, recursive = TRUE)
   
   # Bravely attempt to prepare data set for gdm fitting...this always ends in
   # tears before bedtime before we have a clean data build!
@@ -68,6 +78,12 @@ cm_run_gdm_experiment <- function(thisExperiment,
     print(dataStuff)
   }
   
+  # Store sitepair table:
+  thisExperiment$data$sitepair <- dataStuff
+  
+  # Record the state of the param includeGeo in the cm_experiment object:
+  thisExperiment$includeGeo <- includeGeo
+  
   # Fit a gdm:
   gdmModel <- gdm::gdm(dataStuff, geo = thisExperiment$includeGeo)
   
@@ -96,11 +112,10 @@ cm_run_gdm_experiment <- function(thisExperiment,
   {
     cat("\nResults of variable importance computation:\n==================================================\n")
     print(ans)
-    
-    cat("\n Ready to reurn\n")
+    cat("\n Ready to return\n")
   }
   
-  
+  saveRDS(thisExperiment, paste0(outFolder, "/cmGDM_", thisExperiment$experimentName, ".rds"))
   
   return(thisExperiment)
 }

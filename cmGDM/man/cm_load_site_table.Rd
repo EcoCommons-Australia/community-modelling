@@ -2,7 +2,7 @@
 % Please edit documentation in R/cm_load_site_table.R
 \name{cm_load_site_table}
 \alias{cm_load_site_table}
-\title{Load a  site table and perform checks}
+\title{Load a site table and perform checks}
 \usage{
 cm_load_site_table(
   thisExperiment = NULL,
@@ -11,6 +11,7 @@ cm_load_site_table(
   siteCol = NULL,
   longitudeCol = NULL,
   latitudeCol = NULL,
+  outFolder = "~/cmGDM/",
   trace = FALSE
 )
 }
@@ -27,13 +28,15 @@ cm_load_site_table(
 
 \item{latitudeCol}{Character or integer. Name or numeric index to the column holding latitude values}
 
+\item{outFolder}{String. Path of the output folder}
+
 \item{trace}{Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise}
 }
 \value{
-cm_experiment object with updated fields
+cm_experiment object with updated fields and stores a copy in the user's project folder for this experiment
 }
 \description{
-Load a  site table and perform checks
+Load a site table and perform checks
 }
 \examples{
 \dontrun{

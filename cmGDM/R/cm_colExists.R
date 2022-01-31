@@ -13,11 +13,11 @@
 #' } 
 #' @export
 #'
-cm_colExists <- function(colLabel, colNames)
+cm_colExists <- function(colLabel, colNames, UIname)
 {
   isOK <- TRUE
   msg = ""
-  paramName <- deparse(substitute(colLabel))
+  #paramName <- deparse(substitute(colLabel))
   
   if (is.numeric(colLabel))
   {
@@ -26,13 +26,13 @@ cm_colExists <- function(colLabel, colNames)
     if (colLabel <= 0)
     {
       isOK <- FALSE
-      msg <- paste(paramName, "value given as column number but value is less than 1; column numbers start at 1")
+      msg <- paste(UIname, "given as column number but value is less than 1; column numbers start at 1")
     }
     
     if (colLabel > length(colNames))
     {
       isOK <- FALSE
-      msg <- paste(paramName, "value given as column number but value is greater than the number of columns in the data file")
+      msg <- paste(UIname, "given as column number but value is greater than the number of columns in the data file")
     }
   }
   else
@@ -40,7 +40,7 @@ cm_colExists <- function(colLabel, colNames)
     if (!colLabel %in% colNames)
     {
       isOK <- FALSE
-      msg <- paste(paramName, "value given as a column name but the value was not found in column names of the data file")
+      msg <- paste(UIname, "given as a column name, name was not found in column names of the data file")
     }
   }
   

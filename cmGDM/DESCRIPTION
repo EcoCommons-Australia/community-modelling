@@ -21,7 +21,10 @@ Imports:
  ggplot2,
  ggpubr,
  png,
- magrittr
+ magrittr,
+ gdalUtils,
+ rmarkdown,
+ rlang
 Depends:
  R (>= 4.1)
 RoxygenNote: 7.1.2

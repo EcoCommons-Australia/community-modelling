@@ -1,0 +1,141 @@
+---
+title: GDM Experiment Report
+header-includes:
+- \usepackage{titling}
+- \pretitle{\begin{center}\LARGE\includegraphics[width=8cm]{EcoCommons_logo_1000px.png}\\[\bigskipamount]}
+- \posttitle{\end{center}}
+author: "`r params$thisExperiment$userName`"
+date: "`r as.character(Sys.Date())`"
+output:
+#  html_document:
+#    df_print: paged
+  pdf_document: default
+classoption: a4paper
+geometry: margin=1.5cm
+params:
+  thisExperiment: !r ""
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+outputPath <- path.expand(paste0("~/cmGDM/", params$thisExperiment$experimentName))
+library(cmGDM)
+```
+
+<script>
+   $(document).ready(function() {
+     $head = $('#header');
+     $head.prepend('<img src=\"EcoCommons_logo.png\" style=\"float: right;width: 200px;\"/>')
+   });
+</script>
+
+```{r echo=FALSE}
+#impScores <- round(100*params$thisExperiment$model$varImp[[2]][,1]/sum(params$thisExperiment$model$varImp[[2]][, 1]), 2)
+impScores <- round(params$thisExperiment$model$varImp[[2]][,1], 3)
+maxLen <- max(unlist(lapply(names(impScores), stringr::str_length)))
+paddedNames <- stringr::str_pad(names(impScores), side = "left", width = maxLen + 4, pad = " ")
+paddedNums <- paste0("   ", format(impScores))
+varImpTable <- matrix(c(paddedNames, paddedNums), ncol = 2, dimnames = list(NULL, c("Covariate", "Contribution")))
+
+perfTable <- data.frame(Value = c(round(params$thisExperiment$model$gdm$gdmdeviance, 2),
+                                  round(params$thisExperiment$model$gdm$nulldeviance, 2),
+                                  paste0(round(params$thisExperiment$model$gdm$explained, 2), "%"),
+                                  round(params$thisExperiment$model$gdm$intercept, 3)))
+rownames(perfTable) <- c("GDM deviance", "NULL deviance", "Deviance explained", "Intercept")
+    
+```
+
+## `r params$thisExperiment$experimentName`
+
+Description: `r params$thisExperiment$description`
+
+Experiment created: `r params$thisExperiment$dateCreated`
+
+### Summary:
+
+Number of site/sample pairs: `r params$thisExperiment$model$gdm$sample`
+
+Geographical distance included: `r ifelse(params$thisExperiment$model$gdm$geo, "Yes", "No")`
+
+### Model performance:
+
+Assessing model quality for GDMs follows the basic principles for many other statistical modelling methods. GDMs are a specialised form of Generalised Linear Model (GLM) and the accepted indices of performance are based on a measure termed "deviance". Deviance is a measure of variability in data.
+
+> A basic principle in statistical model evaluation is that there is no single performance measure which can give a complete or comprehensive measure of model performance. You will _always_ need to consider an ensemble of measures each of which highlights a different aspect of model performance.
+
+Two deviance values are reported by the GDM fiting process: GDM or model deviance and Null deviance. GDM deviance is a measure of the variation around the fitted model and is similar in meaning to the residual sum of squares calculated for simple linear regression models. Null deviance represents the inherent variation present in the data. Using these two values we can compute the precentage of deviance explained by the model. Naturally, a good model to choose is the one which maximises the explained deviance.
+
+ > Experience suggests that models of compositional dissimilarity typically show explained deviance values ranging between 20% and 50%.
+
+Another useful measure is the intercept value which may range between 0 and 1. This represents the predicted compositional dissimilarity between a pair of sites with identical values for the environmental covariates (i.e. with zero environmental dissimilarity). A low value suggests that the influence of ecological and stochastic processes on compositional dissimilarity is relatively low compared to the influence of the chosen covariates. A high intercept value may indicate  that there are important covariates which were missed, or that sampling is inadequate.
+
+The table below shows the values of these key measures for the fitted model. 
+
+`r knitr::kable(perfTable, align = c("r", "r")) `
+
+\newpage
+
+Two plots are provided by the GDM fitting software to help visualise model performance. The first shows observed compositional dissimilarity versus 'predicted ecological distance'. 'Predicted ecological distance' is the value produced by the function fitted to environmental covariates which is translated by the link function into predicted compositional dissimilarity. In other words, 'predicted ecological distance' is the raw prediction for transformation into predicted dissimilarity. Note that points on this plot represent values of _dissimilarity between pairs of sites_. The light blue curve represents the expected asymptotic negative exponential link function. A good model should follow the link function trend curve with moderate scatter around it.
+
+```{r echo=FALSE, fig.align="center", fig.height=2, fig.width=2, warning=FALSE}
+
+#![](`r paste0(path.expand(outputPath), "/cmGDM_", params$thisExperiment$experimentName ,"_GDM_ecological_distance.png")`)
+filePath <- paste0(outputPath, "/cmGDM_", params$thisExperiment$experimentName ,"_GDM_ecological_distance.png")
+if (file.exists(filePath)) knitr::include_graphics(filePath)
+```
+
+\newpage
+
+The second plot shows observed compositional dissimilarity _versus_ predicted compositional dissimlarity and is expected to be clear linear relationship indicated by the light blue line. A good model will show a tight, fairly even distribution of points around the line. As before, note that points on this plot represent values of _dissimilarity between pairs of sites_. 
+
+
+```{r echo=FALSE, fig.align="center", fig.height=4, fig.width=4, warning=FALSE}
+
+#![](`r paste0(path.expand(outputPath), "/cmGDM_", params$thisExperiment$experimentName , "_GDM_observed_predicted_dissimilarity.png")`)
+filePath <- paste0(outputPath, "/cmGDM_", params$thisExperiment$experimentName , "_GDM_observed_predicted_dissimilarity.png")
+if (file.exists(filePath)) knitr::include_graphics(filePath)
+
+```
+
+
+
+### Covariate importance:
+
+Number of covariates: `r length(params$thisExperiment$model$gdm$predictors)`
+                      
+A key question in ecological modelling is: _Which variables are important contributors to the model?_
+
+The gdm software provides a number of methods to evaluating variable importance. The following table shows the simplest measure, the _change_ in deviance for a GDM fitted with the variable removed. A large value indicates a large reduction in GDM deviance when the variable was omitted. A value at or close to zero indicates a covariate which may be safely discarded.
+
+`r knitr::kable(varImpTable, align = c("r", "r")) `
+
+\newpage
+
+```{r echo=FALSE, fig.align="center"}
+filePath <- paste0(outputPath, "/cmGDM_", params$thisExperiment$experimentName ,"_GDM_variable_splines_transformed.png")
+if (file.exists(filePath)) knitr::include_graphics(filePath)
+cat('\\newpage')
+```
+
+```{r echo=FALSE, fig.align="center"}
+filePath <- paste0(outputPath, "/cmGDM_", params$thisExperiment$experimentName ,"_GDM_variable_splines_transformed001.png")
+if (file.exists(filePath)) knitr::include_graphics(filePath)
+cat('\\newpage')
+```
+
+```{r echo=FALSE, fig.align="center"}
+filePath <- paste0(outputPath, "/cmGDM_", params$thisExperiment$experimentName ,"_GDM_variable_splines_transformed002.png")
+if (file.exists(filePath)) knitr::include_graphics(filePath)
+cat('\\newpage')
+```
+
+```{r echo=FALSE, fig.align="center"}
+filePath <- paste0(outputPath, "/cmGDM_", params$thisExperiment$experimentName ,"_GDM_variable_splines_transformed003.png")
+if (file.exists(filePath)) knitr::include_graphics(filePath)
+cat('\\newpage')
+```
+
+
+URL to persistent copy of this report as a pdf file
+
+Acknowledgements:

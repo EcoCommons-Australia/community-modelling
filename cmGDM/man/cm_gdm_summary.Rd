@@ -12,7 +12,7 @@ cm_gdm_summary(thisExperiment, outFile = "")
 \item{outFile}{Character. File name (with full path) into which the summary will be written. Default of "" means no file will be written}
 }
 \value{
-Nothing
+A character object of formatted text with side-effect of a text file if \emph{outfile} is not empty
 }
 \description{
 Generate a summary report on a fitted GDM. Output is always written to the console and, optionally, also written to a text file.

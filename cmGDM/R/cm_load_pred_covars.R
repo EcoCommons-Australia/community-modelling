@@ -1,15 +1,16 @@
 
 #' Load Prediction Covariate Data
 #'
-#' Load metadata for GIS layers to be used to predict dissimilarities between sites/samples under different environmental conditions. Checks are made to ensure that the prediction data matches the covariates used to fit a GDM
+#' Load covariate data from GIS layers to be used to predict dissimilarities between sites/samples under different environmental conditions. Checks are made to ensure that the prediction data matches the covariates used to fit a GDM
 #'
 #' @param thisExperiment cm_experiment object. Object for the current experiment. NOTE: Require site data to have been successfully added to the experiment before this method is called 
 #' @param src_folder Character. Path to the folder storing raster layers 
 #' @param pred_filenames Character vector. Vector giving the names of the files in src-folder to be used as prediction covariates in this experiment
 #' @param label Character. An optional human-friendly label for the project's environmental data
+#' @param outFolder Character. Path to user's experiment folder
 #' @param trace Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise
 #' 
-#' @return Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment}
+#' @return Returns an updated copy of the cm_experiment object passed in parameter \emph{thisExperiment} and saves a copy to the user's project folder for the experiment
 #' @export
 #'
 #' @examples
@@ -36,8 +37,16 @@ cm_load_prediction_data <- function(thisExperiment,
                                     src_folder = "",
                                     pred_filenames = "",
                                     label = "",
+                                    outFolder = "~/cmGDM/",
                                     trace = FALSE)
 {
+  if (!("cm_experiment" %in% class(thisExperiment)))
+    stop("Object passed in 'thisExperiment' must be of class 'cm_experiment'")
+  
+  # Make/check path for output for this experiment
+  outFolder <- paste0(path.expand(outFolder), thisExperiment$experimentName)
+  if (!dir.exists(outFolder)) dir.create(outFolder, recursive = TRUE)
+  
   missingLabels <- c("Site/sample data", "Biological data", "Covariate data")
   
   if (!all(thisExperiment$status[c("siteData_OK", "biologicalData_OK", "covarData_OK")]))
@@ -60,7 +69,12 @@ cm_load_prediction_data <- function(thisExperiment,
   if (length(pred_filenames) > length(thisExperiment$data$covarData$covarNames))
     stop("Number of prediction covariates is greater then the number of covariates for fitting GDM: they must be the same")
   
-  if (!all(sort(pred_filenames)) == sort(thisExperiment$data$covarData$covarNames))
+  predCovarNames <- gsub(pattern = "(.*)\\..*$", replacement = "\\1", pred_filenames)
+  ii <- order(predCovarNames)
+  predCovarNames <- predCovarNames[ii]
+  pred_filenames <- pred_filenames[ii]
+  
+  if (!all(sort(predCovarNames)) == sort(thisExperiment$data$covarData$covarNames))
     stop("Names of prediction covariates must match names of covariates used to fit the model")
     
   # ?? try-except or try-catch
@@ -93,16 +107,18 @@ cm_load_prediction_data <- function(thisExperiment,
   extentEnvRange <- Rfast::colMinsMaxs(as.matrix(covarStack))
   
   thisExperiment$dateDataUpdated <- as.character(Sys.Date())
-  thisExperiment$status["covarData_OK"] <- TRUE
-  thisExperiment$data$covarData$srcFolder <- src_folder
-  thisExperiment$data$covarData$filenames <- pred_filenames
-  thisExperiment$data$covarData$label <- label
-  thisExperiment$data$covarData$dataTable <- siteEnvData
-  thisExperiment$data$covarData$covarSiteMin <- siteEnvRange["min", ]
-  thisExperiment$data$covarData$covarSiteMax <- siteEnvRange["max", ]
-  thisExperiment$data$covarData$covarExtentMin <- extentEnvRange["min", ]
-  thisExperiment$data$covarData$covarExtentMax <- extentEnvRange["max", ]
-  thisExperiment$data$covarData$dataTable <- siteEnvData
+  thisExperiment$status["predictionData_OK"] <- TRUE
+  thisExperiment$data$predictionData$srcFolder <- src_folder
+  thisExperiment$data$predictionData$filenames <- pred_filenames
+  thisExperiment$data$predictionData$label <- label
+  thisExperiment$data$predictionData$covarNames <- predCovarNames
+  thisExperiment$data$predictionData$covarSiteMin <- siteEnvRange["min", ]
+  thisExperiment$data$predictionData$covarSiteMax <- siteEnvRange["max", ]
+  thisExperiment$data$predictionData$covarExtentMin <- extentEnvRange["min", ]
+  thisExperiment$data$predictionData$covarExtentMax <- extentEnvRange["max", ]
+  thisExperiment$data$predictionData$dataTable <- siteEnvData
+  
+  saveRDS(thisExperiment, paste0(outFolder, "/cmGDM_", thisExperiment$experimentName, ".rds"))
   
   return(thisExperiment)
 }

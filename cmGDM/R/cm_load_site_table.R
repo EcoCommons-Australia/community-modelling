@@ -1,5 +1,5 @@
 
-#' Load a  site table and perform checks
+#' Load a site table and perform checks
 #' 
 #' @param thisExperiment cm_experiment. Object to which the site data will be added when checks are passed
 #' @param siteFilename Character. Full path to the site file to be added to the cm_experiment object
@@ -7,9 +7,10 @@
 #' @param sheet Character or integer. Name or numeric index to the sheet holding the site information when the file is a spreadsheet/workbook
 #' @param longitudeCol Character or integer. Name or numeric index to the column holding longitude values
 #' @param latitudeCol Character or integer. Name or numeric index to the column holding latitude values
+#' @param outFolder String. Path of the output folder
 #' @param trace Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise
 #'
-#' @return cm_experiment object with updated fields
+#' @return cm_experiment object with updated fields and stores a copy in the user's project folder for this experiment
 #' @export
 #'
 #' @examples
@@ -38,6 +39,7 @@ cm_load_site_table <- function(thisExperiment = NULL,
                                siteCol = NULL,
                                longitudeCol = NULL,
                                latitudeCol = NULL,
+                               outFolder = "~/cmGDM/",
                                trace = FALSE)
 {
   if (is.null(thisExperiment))
@@ -105,7 +107,7 @@ cm_load_site_table <- function(thisExperiment = NULL,
       {
         if (fileType %in% c("xls", "xlsx"))
         {
-          if (trace) cat("lxs or xlsx: calling gdata::read.xls\n")
+          if (trace) cat("xls or xlsx: calling gdata::read.xls\n")
           tryCatch({siteData <- gdata::read.xls(siteFilename, sheet = sheet)})
           if (trace) print(siteData)
         }
@@ -120,7 +122,7 @@ cm_load_site_table <- function(thisExperiment = NULL,
   }
   else
   {
-    testResult <- cm_colExists(siteCol, colnames(siteData))
+    testResult <- cm_colExists(siteCol, colnames(siteData), "Site/sample name column")
     if (!testResult$isOK) stop(testResult$reason)
   }
   
@@ -128,7 +130,7 @@ cm_load_site_table <- function(thisExperiment = NULL,
   # No missing values
   if ((any(is.na(siteData[, siteCol]))) | (any(siteData[, siteCol] == "")))
   {
-    stop("Values found in siteCol column of site data file contain one or more missing values; site labels cannot have missing values")
+    stop("Values found in site/sample column of site data file contain one or more missing values; site labels cannot have missing values")
   }
   
   # No duplicates
@@ -152,7 +154,7 @@ cm_load_site_table <- function(thisExperiment = NULL,
   
   # Are the numeric values OK?
   # Longitude checks...
-  testResult <- cm_colExists(longitudeCol, colnames(siteData))
+  testResult <- cm_colExists(longitudeCol, colnames(siteData), "Longitude column")
   
   if (!testResult$isOK)
     stop(testResult$reason)
@@ -178,7 +180,7 @@ cm_load_site_table <- function(thisExperiment = NULL,
   
   #print("latitude checks")
   # Latitude checks...
-  testResult <- cm_colExists(latitudeCol, colnames(siteData))
+  testResult <- cm_colExists(latitudeCol, colnames(siteData), "Latitude column")
   
   if (!testResult$isOK)
     stop(testResult$reason)
@@ -204,8 +206,21 @@ cm_load_site_table <- function(thisExperiment = NULL,
   
   # Check for coords in the geographical extent of covariate rasters
   
+  # Make/check path for output for this experiment
+  outFolder <- paste0(path.expand(outFolder), thisExperiment$experimentName)
+  if (!dir.exists(outFolder)) dir.create(outFolder, recursive = TRUE)
+  
   if (trace) cat("Updating cm_experiment object\n")
-  # Lucky user has just won the siteData check lottery! 
+  # Lucky user has just won the siteData check lottery!
+  
+  # To match the way formatsitepair function organises row-order, sort site
+  # data. This will be used to order biological data and environmental data when
+  # they are loaded:
+  siteData <- siteData[order(siteData[, siteCol]), ]
+  rownames(siteData) <- siteData[, siteCol]
+  
+  if (trace) print(siteData)
+  
   thisExperiment$status["siteData_OK"] <- TRUE
   thisExperiment$dateDataUpdated <- as.character(Sys.Date())
   thisExperiment$data$siteData$srcFile <- siteFilename
@@ -213,6 +228,8 @@ cm_load_site_table <- function(thisExperiment = NULL,
   thisExperiment$data$siteData$longitudeCol <- longitudeCol
   thisExperiment$data$siteData$latitudeCol <- latitudeCol
   thisExperiment$data$siteData$dataTable <- siteData
+  
+  saveRDS(thisExperiment, paste0(outFolder, "/cmGDM_", thisExperiment$experimentName, ".rds"))
   
   return(thisExperiment)
 }
