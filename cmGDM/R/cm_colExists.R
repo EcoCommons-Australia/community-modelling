@@ -5,6 +5,7 @@
 #'
 #' @param colLabel Character string or integer. Name or index number of the column (or variable, covariate, etc) whose existence is being checked
 #' @param colNames Character vector. The column names or variable set to be used to check the existence of the value passed in colLabel
+#' @param UIname Character. Name of variable to be tested
 #'
 #' @return An named list:
 #' \describe{

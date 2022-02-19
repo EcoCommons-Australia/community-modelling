@@ -6,6 +6,7 @@
 #' @param thisExperiment cm_experiment. Object for the current experiment
 #' @param outFolder String. Path to the experiment output folder
 #' @param includeGeo Logical. Should geographical distance between sites/samples be added as a covariate?
+#' @param calc_varImp Logical. Should variable importance calculations be run?
 #' @param trace Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise
 #'
 #' @return cm_experiment object with updated fields with side-effect of saving the updated cm_experiment object to the user's experiment folder
@@ -20,6 +21,7 @@
 cm_run_gdm_experiment <- function(thisExperiment,
                                   outFolder = "~/cmGDM/",
                                   includeGeo = FALSE,
+                                  calc_varImp = FALSE,
                                   trace = FALSE)
 {
   numCores <- 10
@@ -100,12 +102,15 @@ cm_run_gdm_experiment <- function(thisExperiment,
     
     
     # Variable importance computations
+    if (calc_varImp)
+    {
     #if (trace) print(dataStuff)
     ans <- gdm::gdm.varImp(dataStuff, geo = thisExperiment$includeGeo, parallel = TRUE, fullModelOnly = FALSE,
                            cores = numCores) #,
     #outFile = paste0(outFolder, "/", this_Taxon, "_variable_importance_results.csv"))
     #varImportance <- data.frame(importance = round(100*ans[[2]][, 1]/sum(ans[[2]][, 1]),2))
     thisExperiment$model$varImp <- ans #100*ans[[2]][, 1]/sum(ans[[2]][, 1])
+    }
   }
   
   if (trace)

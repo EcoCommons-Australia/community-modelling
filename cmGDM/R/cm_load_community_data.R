@@ -70,8 +70,8 @@ cm_load_community_data <- function(thisExperiment = NULL,
   
   if (!is(thisExperiment, "cm_experiment")) stop("thisExperiment must be class 'cm_experiment'; Please run cm_create_new_experiment()") 
   
-  # if (is.null(siteCol) & !(dataType == "Dissimilarity")) stop("siteCol must be given a value: either the name or column number of site labels")
-  if (is.null(siteCol)) stop("siteCol must be given a value: either the name or column number of site labels")
+  if (is.null(siteCol) & !(dataType == "Dissimilarity")) stop("siteCol must be given a value: either the name or column number of site labels")
+  #if (is.null(siteCol)) stop("siteCol must be given a value: either the name or column number of site labels")
   
   if ((dataType == "Dissimilarity") & is.null(dissimMeasure)) stop("Because dataType = 'Dissimilarity', 'dissimMeasure' cannot be NULL")
   
@@ -88,16 +88,23 @@ cm_load_community_data <- function(thisExperiment = NULL,
     # So, here is a simple but more reliable method:
     stuff <- readLines(bioFilename, n = 10)
     
-    delimFound <- FALSE
+    #delimFound <- FALSE
     thisDelim <- NULL
     delimSet <- c(" ", ",", ";", "\t")
+    delimCount <- 0
     
     for (testDelim in delimSet)
     {
       split_size <- unlist(lapply(strsplit(stuff, testDelim, fixed = TRUE), function(el){length(el)}))
-      delimFound <- all(split_size == split_size[1]) & (split_size[1] != 1)
+      # delimFound <- all(split_size == split_size[1]) & (split_size[1] != 1)
+      # 
+      # if (delimFound) thisDelim <- testDelim
       
-      if (delimFound) thisDelim <- testDelim
+      if (sum(split_size) > delimCount)
+      {
+        delimCount <- sum(split_size)
+        thisDelim <- testDelim
+      }
     }
     
     if (is.null(thisDelim)) stop(paste("fileType =", fileType, "but a sensible delimiter could not be found"))
@@ -362,10 +369,7 @@ cm_load_community_data <- function(thisExperiment = NULL,
     # Row names in bioData are all present in siteTable (which MUST have been loaded before attempting to load bioData)
     if (!all(siteNames %in% thisExperiment$data$siteData$dataTable[, thisExperiment$data$siteData$siteCol]))
       stop(paste("Site names in bioData do not match site labels in siteData"))
-    
-    # if (!all(is.numeric(bioData)))
-    #   stop("'bioData' contains non-numeric values; cannot be so for 'dataType' = 'Abundance' or 'Dissimilarity'")
-    
+
     # Test for negative values
     negCells <- which(bioData_trimmed < 0, arr.ind = TRUE)
     
@@ -375,7 +379,7 @@ cm_load_community_data <- function(thisExperiment = NULL,
       if (nrow(negCells) > 0)
       {
         # Are any of the negative values non-trivial?
-        if (any(bioData_trimmed[negCells]) > small_Fst)
+        if (any(bioData_trimmed[negCells] < small_Fst))
           stop("'bioData' with 'dissimMeasure' = 'Fst' has large negative values")
         else
         {

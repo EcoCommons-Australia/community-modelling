@@ -15,7 +15,7 @@ cm_performance_plots(
 
 \item{outFolder}{Character. Path to user's experiment folder}
 
-\item{showVarImp}{Character. Control which set of variable contribution plots are created: "all" generates all plots; "nonzero" generates only plots for variables with a variable importance score greater than zero}
+\item{showVarImp}{Character. Control which set of variable contribution plots are created: "all" generates all plots; "nonzero" generates only plots for variables with a variable importance score greater than zero. If variable importance permutation has not been run, this parameter will be ignored}
 }
 \value{
 Nothing

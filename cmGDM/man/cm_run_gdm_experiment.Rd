@@ -8,6 +8,7 @@ cm_run_gdm_experiment(
   thisExperiment,
   outFolder = "~/cmGDM/",
   includeGeo = FALSE,
+  calc_varImp = FALSE,
   trace = FALSE
 )
 }
@@ -17,6 +18,8 @@ cm_run_gdm_experiment(
 \item{outFolder}{String. Path to the experiment output folder}
 
 \item{includeGeo}{Logical. Should geographical distance between sites/samples be added as a covariate?}
+
+\item{calc_varImp}{Logical. Should variable importance calculations be run?}
 
 \item{trace}{Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise}
 }

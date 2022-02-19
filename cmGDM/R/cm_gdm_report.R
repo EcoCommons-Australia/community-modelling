@@ -29,7 +29,6 @@ cm_gdm_report <- function(thisExperiment,
   if (!("cm_experiment" %in% class(thisExperiment)))
     stop("Object passed in 'thisExperiment' must be of class 'cm_experiment'")
   
-  ######### ????????????? Make a report even if no experiment has been run ??????????????????
   if (!thisExperiment$status["modelFit_OK"])
     stop(paste("No GDM model has been successfully fitted for experiment", thisExperiment$experimentName))
   
@@ -52,9 +51,18 @@ cm_gdm_report <- function(thisExperiment,
   
   if (trace) cat("cm_gdm_report: About to start\n")
   
+  if (length(thisExperiment$model$varImp) > 0)
+  {
   rmarkdown::render(system.file("cmGDM_report.Rmd", package = "cmGDM"),
                     params = list(thisExperiment = thisExperiment),
                     output_file = paste0(outFolder, "/cmGDM_report_", thisExperiment$experimentName,"_", as.character(Sys.Date()), ".pdf"))
+  }
+  else
+  {
+    rmarkdown::render(system.file("cmGDM_report_noVarImp.Rmd", package = "cmGDM"),
+                      params = list(thisExperiment = thisExperiment),
+                      output_file = paste0(outFolder, "/cmGDM_report_", thisExperiment$experimentName,"_", as.character(Sys.Date()), ".pdf"))
+  }
   
   if (trace) cat("cm_gdm_report: End of report generation\n")
 }

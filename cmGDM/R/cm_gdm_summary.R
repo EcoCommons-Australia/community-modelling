@@ -28,14 +28,21 @@ cm_gdm_summary <- function(thisExperiment,
   if (thisExperiment$status["modelFit_OK"])
     #stop(paste("No GDM model has been successfully fitted for experiment", thisExperiment$experimentName))
   {
-    #impScores <- round(100*thisExperiment$model$varImp[[2]][,1]/sum(thisExperiment$model$varImp[[2]][, 1]), 2)
-    impScores <- round(thisExperiment$model$varImp[[2]][,1], 2)
-    maxLen <- max(unlist(lapply(names(impScores), stringr::str_length)))
-    paddedNames <- stringr::str_pad(names(impScores), side = "left", width = maxLen + 8, pad = " ")
-    paddedNums <- paste0("        ", format(impScores)) #stringr::str_pad(as.character(impScores), side = "left", width = 6, pad = " ")
-    #impTable <- data.frame(Covariate = names(impScores), Contribution = impScores, stringsAsFactors = FALSE)
-    impTable <- matrix(c(paddedNames, paddedNums), ncol = 2, dimnames = list(NULL, c("Covariate", "Contribution")))
-    impTable_str <- c("    Covariate       Contrib.", "    ------------    -----------", paste(impTable[, 1], impTable[, 2]))
+    if (length(thisExperiment$model$varImp) > 0)
+    {
+      #impScores <- round(100*thisExperiment$model$varImp[[2]][,1]/sum(thisExperiment$model$varImp[[2]][, 1]), 2)
+      impScores <- round(thisExperiment$model$varImp[[2]][,1], 2)
+      maxLen <- max(unlist(lapply(names(impScores), stringr::str_length)))
+      paddedNames <- stringr::str_pad(names(impScores), side = "left", width = maxLen + 8, pad = " ")
+      paddedNums <- paste0("        ", format(impScores)) #stringr::str_pad(as.character(impScores), side = "left", width = 6, pad = " ")
+      #impTable <- data.frame(Covariate = names(impScores), Contribution = impScores, stringsAsFactors = FALSE)
+      impTable <- matrix(c(paddedNames, paddedNums), ncol = 2, dimnames = list(NULL, c("Covariate", "Contribution")))
+      impTable_str <- c("    Covariate       Contrib.", "    ------------    -----------", paste(impTable[, 1], impTable[, 2]))
+    }
+    else
+    {
+      impTable_str <- "  Covariate importance permutation test has not been run.\n  To do this re-run the experiment with option 'Compute Var Imp' selected."
+    }
     
     summaryLines <- NULL
     
@@ -46,7 +53,8 @@ cm_gdm_summary <- function(thisExperiment,
                       "-----------------------------------------------",
                       "",
                       paste("Experiment name:", thisExperiment$experimentName),
-                      paste("Run date:", thisExperiment$dateLastModelRun),
+                      paste("Decription:", thisExperiment$description),
+                      paste("Model run date:", thisExperiment$dateLastModelRun),
                       "",
                       paste("Number of site/sample pairs:", thisExperiment$model$gdm$sample),
                       "",
@@ -68,7 +76,7 @@ cm_gdm_summary <- function(thisExperiment,
     #cat(paste(summaryLines, collapse = "\n"))
   }
   else
-    summaryLines <- paste("No GDM model has been successfully fitted for experiment", thisExperiment$experimentName)
+    summaryLines <- paste0("No GDM model has been successfully fitted for experiment '", thisExperiment$experimentName, "'")
   
   if (outFile != "")
   {

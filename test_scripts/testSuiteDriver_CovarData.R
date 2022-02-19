@@ -16,7 +16,9 @@
 # 2021-11-24: Changed to use prototype package 'cmGDM', and
 # generalised access to test data files via a global parameter which points to
 # the data file folder.
+# 2022-02-19: Some code tidy-ups to adapt to modifications to cmGDM functions
 #
+
 
 library(cmGDM)
 
@@ -25,9 +27,14 @@ library(cmGDM)
 #               ENVIRONMENTAL COVARIATE DATA              #
 ###########################################################
 
+### CHANGE THE PATH TO SHOW THE FOLDER IN WHICH YOU HAVE STORED THE DOWNLOADED DATA FILES ####
 base_folder <- "/home/peterw/Nyctimene/EcoCommons/R-scripts/protoype_dev/test_data/"
+##############################################################################################
 
-dataTestExp <- cmGDM::cm_create_new_experiment("peterw", "bioData tests")
+dataTestExp <- cmGDM::cm_create_new_experiment(userID = "user123",
+                                               userName = "peterw",
+                                               experimentName = "envData tests",
+                                               description = "Tests for loading environmental covariate data")
 
 dataTestExp <- cmGDM::cm_load_site_table(thisExperiment = dataTestExp,
                                          siteFilename = paste0(base_folder, "siteData_NSW_OK.csv"),

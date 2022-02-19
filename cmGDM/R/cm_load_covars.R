@@ -65,7 +65,7 @@ cm_load_covar_data <- function(thisExperiment,
   
   if (covar_filename != "") # Env covar data is in a pre-assembled file
   {
-    if (!file.exists(covar_filename)) stop("File provided in 'fileName' cannot be found")
+    if (!file.exists(file.path(src_folder, covar_filename))) stop("File provided in 'covar_filename' cannot be found")
     
     fileType <- tools::file_ext(covar_filename)
     
@@ -78,21 +78,29 @@ cm_load_covar_data <- function(thisExperiment,
       if (fileType %in% c("csv", "txt"))
       {
         # Some form of text file. First, attempt to identify the delimiter...
-        #thisDelim <- reader::get.delim(siteFilename)
+        #thisDelim <- reader::get.delim(bioFilename)
+        
         # reader::get_delim() sometimes fails spectacularly and at the most inopportune time
         # So, here is a simple but more reliable method:
-        stuff <- readLines(covar_filename, n = 10)
+        stuff <- readLines(file.path(src_folder, covar_filename), n = 10)
         
-        delimFound <- FALSE
+        #delimFound <- FALSE
         thisDelim <- NULL
         delimSet <- c(" ", ",", ";", "\t")
+        delimCount <- 0
         
         for (testDelim in delimSet)
         {
           split_size <- unlist(lapply(strsplit(stuff, testDelim, fixed = TRUE), function(el){length(el)}))
-          delimFound <- all(split_size == split_size[1]) & (split_size[1] != 1)
+          # delimFound <- all(split_size == split_size[1]) & (split_size[1] != 1)
+          # 
+          # if (delimFound) thisDelim <- testDelim
           
-          if (delimFound) thisDelim <- testDelim
+          if (sum(split_size) > delimCount)
+          {
+            delimCount <- sum(split_size)
+            thisDelim <- testDelim
+          }
         }
         
         if (is.null(thisDelim)) stop(paste("fileType =", fileType, "but a sensible delimiter could not be found"))
@@ -102,7 +110,7 @@ cm_load_covar_data <- function(thisExperiment,
         # if (thisDelim %in% c(" ", ",", "\t"))
         # {
         if (trace) cat("csv or txt: Calling base::read.table\n")
-        tryCatch({siteEnvData <- read.table(covar_filename, header = TRUE, sep = thisDelim, stringsAsFactors = FALSE)})
+        tryCatch({siteEnvData <- read.table(file.path(src_folder, covar_filename), header = TRUE, sep = thisDelim, stringsAsFactors = FALSE)})
         if (trace)
         {
           cat("Dump after loading csv or txt file:\n")

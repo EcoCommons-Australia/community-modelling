@@ -86,7 +86,7 @@ if (file.exists(filePath)) knitr::include_graphics(filePath)
 
 \newpage
 
-The second plot shows observed compositional dissimilarity _versus_ predicted compositional dissimlarity and is expected to be clear linear relationship indicated by the light blue line. A good model will show a tight, fairly even distribution of points around the line. As before, note that points on this plot represent values of _dissimilarity between pairs of sites_. 
+The second plot shows observed compositional dissimilarity _versus_ predicted compositional dissimlarity and is expected to be a linear relationship indicated by the light blue line. A good model will show a tight, fairly even distribution of points around the line. As before, note that points on this plot represent values of _dissimilarity between pairs of sites_. 
 
 
 ```{r echo=FALSE, fig.align="center", fig.height=4, fig.width=4, warning=FALSE}
@@ -109,33 +109,43 @@ The gdm software provides a number of methods to evaluating variable importance.
 
 `r knitr::kable(varImpTable, align = c("r", "r")) `
 
+More information is available about the characteristics of the relationship between the biological data and each covariate. The following plots show the way the relationship between biological dissimilarity and a covariate changes along the range of values for the covariate presented during model fitting. Each curve can show if there is a uniform trend, or if there are marked changes and discontinuities in the way each covariate contributes to the prediction of biological dissimilarity. The plots have been ordered in decreasing value of importance scores.
+
 \newpage
 
 ```{r echo=FALSE, fig.align="center"}
 filePath <- paste0(outputPath, "/cmGDM_", params$thisExperiment$experimentName ,"_GDM_variable_splines_transformed.png")
 if (file.exists(filePath)) knitr::include_graphics(filePath)
-cat('\\newpage')
+# cat('\\newpage')
 ```
 
 ```{r echo=FALSE, fig.align="center"}
 filePath <- paste0(outputPath, "/cmGDM_", params$thisExperiment$experimentName ,"_GDM_variable_splines_transformed001.png")
 if (file.exists(filePath)) knitr::include_graphics(filePath)
-cat('\\newpage')
+# cat('\\newpage')
 ```
 
 ```{r echo=FALSE, fig.align="center"}
 filePath <- paste0(outputPath, "/cmGDM_", params$thisExperiment$experimentName ,"_GDM_variable_splines_transformed002.png")
 if (file.exists(filePath)) knitr::include_graphics(filePath)
-cat('\\newpage')
+# cat('\\newpage')
 ```
 
 ```{r echo=FALSE, fig.align="center"}
 filePath <- paste0(outputPath, "/cmGDM_", params$thisExperiment$experimentName ,"_GDM_variable_splines_transformed003.png")
 if (file.exists(filePath)) knitr::include_graphics(filePath)
-cat('\\newpage')
+# cat('\\newpage')
 ```
 
 
 URL to persistent copy of this report as a pdf file
 
-Acknowledgements:
+
+## References:
+
+Ferrier, S., G. Manion, J. Elith, and K. Richardson. 2007. Using generalized dissimilarity modelling to analyse and predict patterns of beta diversity in regional biodiversity assessment. Diversity and Distributions 13:252–264.
+
+Fitzpatrick, M. C., and S. R. Keller. 2015. Ecological genomics meets community-level modelling of biodiversity: mapping the genomic landscape of current and future environmental adaptation. Ecology Letters 18:1–16.
+
+
+## Acknowledgements:

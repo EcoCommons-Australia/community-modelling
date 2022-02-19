@@ -10,6 +10,8 @@ cm_colExists(colLabel, colNames, UIname)
 \item{colLabel}{Character string or integer. Name or index number of the column (or variable, covariate, etc) whose existence is being checked}
 
 \item{colNames}{Character vector. The column names or variable set to be used to check the existence of the value passed in colLabel}
+
+\item{UIname}{Character. Name of variable to be tested}
 }
 \value{
 An named list:

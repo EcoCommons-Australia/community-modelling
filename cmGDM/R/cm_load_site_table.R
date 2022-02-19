@@ -71,16 +71,23 @@ cm_load_site_table <- function(thisExperiment = NULL,
       # So, here is a simple but more reliable method:
       stuff <- readLines(siteFilename, n = 10)
       
-      delimFound <- FALSE
+      #delimFound <- FALSE
       thisDelim <- NULL
       delimSet <- c(" ", ",", ";", "\t")
+      delimCount <- 0
       
       for (testDelim in delimSet)
       {
         split_size <- unlist(lapply(strsplit(stuff, testDelim, fixed = TRUE), function(el){length(el)}))
-        delimFound <- all(split_size == split_size[1]) & (split_size[1] != 1)
+        # delimFound <- all(split_size == split_size[1]) & (split_size[1] != 1)
+        # 
+        # if (delimFound) thisDelim <- testDelim
         
-        if (delimFound) thisDelim <- testDelim
+        if (sum(split_size) > delimCount)
+        {
+          delimCount <- sum(split_size)
+          thisDelim <- testDelim
+        }
       }
       
       if (is.null(thisDelim)) stop(paste("fileType =", fileType, "but a sensible delimiter could not be found"))
@@ -100,6 +107,9 @@ cm_load_site_table <- function(thisExperiment = NULL,
       if (fileType == "ods")
       {
         if (trace) cat("ods: Calling readODS::read_ods\n")
+        # If no value (character or integer) was supplied in the function call, then assume sheet == 1
+        if (is.null(sheet)) sheet <- 1
+        
         tryCatch({siteData <- readODS::read_ods(siteFilename, sheet = sheet, na = c("NA", ""))})
         if (trace) print(siteData)
       }
@@ -108,6 +118,9 @@ cm_load_site_table <- function(thisExperiment = NULL,
         if (fileType %in% c("xls", "xlsx"))
         {
           if (trace) cat("xls or xlsx: calling gdata::read.xls\n")
+          # If no value (character or integer) was supplied in the function call, then assume sheet == 1
+          if (is.null(sheet)) sheet <- 1
+          
           tryCatch({siteData <- gdata::read.xls(siteFilename, sheet = sheet)})
           if (trace) print(siteData)
         }

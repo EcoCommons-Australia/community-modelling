@@ -5,7 +5,7 @@
 #'
 #' @param thisExperiment cm_experiment object. An experiment object storing a successfully fitted GDM
 #' @param outFolder Character. Path to user's experiment folder
-#' @param showVarImp Character. Control which set of variable contribution plots are created: "all" generates all plots; "nonzero" generates only plots for variables with a variable importance score greater than zero
+#' @param showVarImp Character. Control which set of variable contribution plots are created: "all" generates all plots; "nonzero" generates only plots for variables with a variable importance score greater than zero. If variable importance permutation has not been run, this parameter will be ignored
 #'
 #' @return Nothing
 #' @export
@@ -89,17 +89,22 @@ cm_performance_plots <- function(thisExperiment,
   # Collate spline plotting coordinates
   plotyStuff <- gdm::isplineExtract(thisExperiment$model$gdm)
   
-  # Extract scores
-  #varImpScore <- sort(100*thisExperiment$model$varImp[[2]][, 1]/sum(thisExperiment$model$varImp[[2]][, 1]), decreasing = TRUE)
-  varImpScore <- sort(round(thisExperiment$model$varImp[[2]][, 1], 3), decreasing = TRUE)
-  
-  # Trim variables to be plotted?
-  if (toupper(showVarImp) == "NONZERO")
+  if (length(thisExperiment$model$varImp) > 0)
   {
-    varImpScore <- varImpScore[varImpScore > 0]
+    # Extract scores
+    #varImpScore <- sort(100*thisExperiment$model$varImp[[2]][, 1]/sum(thisExperiment$model$varImp[[2]][, 1]), decreasing = TRUE)
+    varImpScore <- sort(round(thisExperiment$model$varImp[[2]][, 1], 3), decreasing = TRUE)
+    
+    # Trim variables to be plotted?
+    if (toupper(showVarImp) == "NONZERO")
+    {
+      varImpScore <- varImpScore[varImpScore > 0]
+    }
+    
+    varNames <- names(varImpScore)
   }
-  
-  varNames <- names(varImpScore)
+  else
+    varNames <- colnames(plotyStuff$x)
   
   # Set up a container for the ggplot objects
   plotyBits <- vector("list", length(varNames))
@@ -111,17 +116,33 @@ cm_performance_plots <- function(thisExperiment,
     plotData <- data.frame(x = plotyStuff$x[, thisVar],
                            y = plotyStuff$y[, thisVar])
     
-    plotyBits[[thisVar]] <- ggplot2::ggplot(plotData, aes(x = .data$x, y = .data$y)) +
-      ggplot2::geom_line(colour = "blue", size = 1) +
-      ggplot2::ylab(paste0("f(", thisVar, ")")) +
-      ggplot2::xlab(thisVar) +
-      ggplot2::ylim(c(0,1)) +
-      ggplot2::ggtitle(paste0("Contribution: ", round(varImpScore[thisVar], 2))) +
-      ggplot2::theme(title = ggplot2::element_text(size = 9),
-                     axis.title.x = ggplot2::element_text(size = 9),
-                     axis.title.y = ggplot2::element_text(size = 9),
-                     axis.text.x = ggplot2::element_text(size = 8),
-                     axis.text.y = ggplot2::element_text(size = 8))
+    if (length(thisExperiment$model$varImp) > 0)
+    {
+      plotyBits[[thisVar]] <- ggplot2::ggplot(plotData, aes(x = .data$x, y = .data$y)) +
+        ggplot2::geom_line(colour = "blue", size = 1) +
+        ggplot2::ylab(paste0("f(", thisVar, ")")) +
+        ggplot2::xlab(thisVar) +
+        ggplot2::ylim(c(0, ceiling(max(plotyStuff$y)))) +
+        ggplot2::ggtitle(paste0("Contribution: ", round(varImpScore[thisVar], 2))) +
+        ggplot2::theme(title = ggplot2::element_text(size = 9),
+                       axis.title.x = ggplot2::element_text(size = 9),
+                       axis.title.y = ggplot2::element_text(size = 9),
+                       axis.text.x = ggplot2::element_text(size = 8),
+                       axis.text.y = ggplot2::element_text(size = 8))
+    }
+    else
+    {
+      plotyBits[[thisVar]] <- ggplot2::ggplot(plotData, aes(x = .data$x, y = .data$y)) +
+        ggplot2::geom_line(colour = "blue", size = 1) +
+        ggplot2::ylab(paste0("f(", thisVar, ")")) +
+        ggplot2::xlab(thisVar) +
+        ggplot2::ylim(c(0, ceiling(max(plotyStuff$y)))) +
+        ggplot2::theme(title = ggplot2::element_text(size = 9),
+                       axis.title.x = ggplot2::element_text(size = 9),
+                       axis.title.y = ggplot2::element_text(size = 9),
+                       axis.text.x = ggplot2::element_text(size = 8),
+                       axis.text.y = ggplot2::element_text(size = 8))
+    }
   }
   
   # Save the multipanel plot
