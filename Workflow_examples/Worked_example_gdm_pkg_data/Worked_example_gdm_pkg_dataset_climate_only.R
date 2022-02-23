@@ -56,8 +56,6 @@
 ############################################################################
 
 library(cmGDM)
-library(stringr)
-
 
 # Step 1: Create experiment object
 myExperiment <- cmGDM::cm_create_new_experiment(userID = "ID123",
@@ -68,7 +66,7 @@ myExperiment <- cmGDM::cm_create_new_experiment(userID = "ID123",
 # Step 2: Load site details: You will need to change the path to the site data
 # file to suit your situation
 myExperiment <- cmGDM::cm_load_site_table(myExperiment,
-                                          siteFilename = "/home/peterw/Nyctimene/EcoCommons/R-scripts/protoype_dev/Examples/gdm_pkg_example_data/gdm_pkg_site_table.csv",
+                                          siteFilename = "/home/peterw/Data_and_Projects/EcoCommons/community-modelling-workflow/Workflow_examples/Worked_example_gdm_pkg_data/gdm_pkg_site_table.csv",
                                           siteCol = "site",
                                           longitudeCol = "Long",
                                           latitudeCol = "Lat")
@@ -78,7 +76,7 @@ myExperiment <- cmGDM::cm_load_site_table(myExperiment,
 # 'bioFilename'
 
 myExperiment <- cmGDM::cm_load_community_data(thisExperiment = myExperiment,
-                                              bioFilename = "/home/peterw/Nyctimene/EcoCommons/R-scripts/protoype_dev/Examples/gdm_pkg_example_data/gdm_pkg_PA_table.csv",
+                                              bioFilename = "/home/peterw/Data_and_Projects/EcoCommons/community-modelling-workflow/Workflow_examples/Worked_example_gdm_pkg_data/gdm_pkg_PA_table.csv",
                                               dataType = "Presence_absence",
                                               siteCol = "site",
                                               dissimMeasure = "Bray-Curtis")
@@ -92,7 +90,7 @@ myExperiment <- cmGDM::cm_load_community_data(thisExperiment = myExperiment,
 # predicted community composition using scores from a PCA of transformed
 # environmental covariates.
 myExperiment <- cmGDM::cm_load_covar_data(myExperiment,
-                                          src_folder = "/home/peterw/Nyctimene/EcoCommons/R-scripts/protoype_dev/Examples/env_data/westOZ",
+                                          src_folder = "/home/peterw/Data_and_Projects/EcoCommons/community-modelling-workflow/Workflow_examples/env_data/westOZ",
                                           covar_filenames = c("westOZ_bio5.tif",
                                                               "westOZ_bio6.tif",
                                                               "westOZ_bio15.tif",

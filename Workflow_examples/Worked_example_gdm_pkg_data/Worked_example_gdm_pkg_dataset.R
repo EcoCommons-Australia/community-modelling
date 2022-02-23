@@ -75,7 +75,7 @@ myExperiment <- cmGDM::cm_load_site_table(myExperiment,
                                           longitudeCol = "Long",
                                           latitudeCol = "Lat")
 
-# Step 3: Load biological data: A pre-computed DISSIMILARITY matrix: As before this file must be
+# Step 3: Load biological data: A community table storing presence-absence coded data: As before this file must be
 # downloaded to a local location and this path must be passed in the parameter
 # 'bioFilename'
 

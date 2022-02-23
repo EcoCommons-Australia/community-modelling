@@ -55,18 +55,18 @@
 ############################################################################
 
 library(cmGDM)
-library(stringr)
+#library(stringr)
 
 # Step 1: Create experiment object
 myExperiment <- cmGDM::cm_create_new_experiment(userID = "ID123",
                                                 userName = "Peter D. Wilson",
-                                                experimentName = "Example GDM fit 5",
-                                                description = "Use Acacia purpureopetala data as example Run 5: No var imp, No geo")
+                                                experimentName = "Example GDM fit Fst",
+                                                description = "Use Acacia purpureopetala data as Fst example")
 
 # Step 2: Load site details: You will need to change the path to the site data
 # file to suit your situation
 myExperiment <- cmGDM::cm_load_site_table(myExperiment,
-                                          siteFilename = "/home/peterw/R-scripts/EcoCommons/cm_gdm_dev/test_runs/siteLocation.csv",
+                                          siteFilename = "/home/peterw/Nyctimene/EcoCommons/R-scripts/protoype_dev/Examples/Worked_example_Fst/siteLocation.csv",
                                           siteCol = "site",
                                           longitudeCol = "long",
                                           latitudeCol = "lat")
@@ -75,7 +75,7 @@ myExperiment <- cmGDM::cm_load_site_table(myExperiment,
 # downloaded to a local location and this path must be passed in the parameter
 # 'bioFilename'
 myExperiment <- cmGDM::cm_load_community_data(thisExperiment = myExperiment,
-                                              bioFilename = "/home/peterw/R-scripts/EcoCommons/cm_gdm_dev/test_runs/Fstonlynewsitenamesonly_PDW.csv",
+                                              bioFilename = "/home/peterw/Nyctimene/EcoCommons/R-scripts/protoype_dev/Examples/Worked_example_Fst/Fstonlynewsitenamesonly_PDW.csv",
                                               dataType = "Dissimilarity",
                                               dissimMeasure = "Fst")
 
@@ -84,8 +84,8 @@ myExperiment <- cmGDM::cm_load_community_data(thisExperiment = myExperiment,
 # this location on your computer. NOTE: This step may take some time to complete
 # as a reasonably large volume of data must be manipulated.
 myExperiment <- cmGDM::cm_load_covar_data(myExperiment,
-                                          src_folder = "/home/peterw/R-scripts/EcoCommons/cm_gdm_dev/test_runs/env_data/eastOZ",
-                                          covar_filenames = paste0("CHELSA_bio", str_pad(as.character(1:19), side = "left", width = 2, pad = "0"), ".tif"))
+                                          src_folder = "/home/peterw/Nyctimene/EcoCommons/R-scripts/protoype_dev/Examples/env_data/acacia_purp",
+                                          covar_filenames = list.files("/home/peterw/Nyctimene/EcoCommons/R-scripts/protoype_dev/Examples/env_data/acacia_purp/", "*.tif"))
 
 # Step 5: Fit a GDM: This is the default fitting of a GDM. It performs a basic
 # model fit, and does not generate variable importance information AND does not
@@ -107,7 +107,7 @@ myExperiment <- cm_run_gdm_experiment(myExperiment, calc_varImp = TRUE)
 # OVERWRITE the previous results stored in the object 'thisExperiment'. If you
 # wish to keep these alternate runs completely separate, you should set up a
 # new experiment.
-myExperiment <- cm_run_gdm_experiment(myExperiment, includeGeo = TRUE)
+myExperiment <- cm_run_gdm_experiment(myExperiment, includeGeo = TRUE, calc_varImp = TRUE)
 
 ############################################################################
 # The following steps are optional. They provide a range of summary information
@@ -126,6 +126,12 @@ cm_gdm_summary(myExperiment)
 # image files in the default experiment folder where you can view them or added
 # them to documents.
 cm_performance_plots(myExperiment)
+
+
+# We can economise on the variable response plot by showing only plots for those
+# variables with importance scores greater than zero. This is achieved by
+# setting showVarImp = "nonzero".
+cm_performance_plots(myExperiment, showVarImp = "nonzero")
 
 # The basic gdm package includes a function to produce a map (in image form)
 # showing grid cells which are predicted to have similar composition on the
