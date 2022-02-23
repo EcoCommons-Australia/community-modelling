@@ -33,7 +33,7 @@ cm_gdm_summary <- function(thisExperiment,
       #impScores <- round(100*thisExperiment$model$varImp[[2]][,1]/sum(thisExperiment$model$varImp[[2]][, 1]), 2)
       impScores <- round(thisExperiment$model$varImp[[2]][,1], 2)
       maxLen <- max(unlist(lapply(names(impScores), stringr::str_length)))
-      paddedNames <- stringr::str_pad(names(impScores), side = "left", width = maxLen + 8, pad = " ")
+      paddedNames <- stringr::str_pad(names(impScores), side = "left", width = maxLen + 4, pad = " ")
       paddedNums <- paste0("        ", format(impScores)) #stringr::str_pad(as.character(impScores), side = "left", width = 6, pad = " ")
       #impTable <- data.frame(Covariate = names(impScores), Contribution = impScores, stringsAsFactors = FALSE)
       impTable <- matrix(c(paddedNames, paddedNums), ncol = 2, dimnames = list(NULL, c("Covariate", "Contribution")))

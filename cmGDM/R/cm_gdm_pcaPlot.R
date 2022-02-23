@@ -114,5 +114,6 @@ cm_gdm_pcaPlot <- function(thisExperiment,
   # Now perform translation to geoTIFF 3-band file...
   gdalUtils::gdal_translate(paste0(path.expand(outFolder), "/cmGDM_", thisExperiment$experimentName , "_GDM_transformed_PCA.png"),
                             paste0(path.expand(outFolder), "/cmGDM_", thisExperiment$experimentName , "_GDM_transformed_PCA.tif"),
-                            b = 1:3)
+                            b = 1:3,
+                            a_srs = "EPSG:4326")
 }
