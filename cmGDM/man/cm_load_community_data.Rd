@@ -9,6 +9,7 @@ cm_load_community_data(
   bioFilename = NULL,
   sheet = 1,
   dataType = "",
+  sppFilter = 0,
   presenceMarker = "1",
   absenceMarker = "0",
   siteCol = NULL,
@@ -25,6 +26,8 @@ cm_load_community_data(
 \item{sheet}{Character or integer. Name or index number of a sheet if \emph{bioFilename} points to a file containing a spreadsheet/workbook}
 
 \item{dataType}{Character. One of the accepted data types in entries in the file named in \emph{bioFilename}. One of: "Presence_absence", "Abundance", "Dissimilarity"}
+
+\item{sppFilter}{Integer. For dataType == "Abundance" or dataType == "Presence_absence", filter sites with richnes < sppFilter. Default of 0 causes no filtering.}
 
 \item{presenceMarker}{Character. Denotes "presence" when in the file named in \emph{bioFilename} has \emph{dataType} of "Presence-Absence"}
 

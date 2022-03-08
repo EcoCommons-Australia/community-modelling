@@ -7,6 +7,8 @@
 #' @param sheet Character or integer. Name or numeric index to the sheet holding the site information when the file is a spreadsheet/workbook
 #' @param longitudeCol Character or integer. Name or numeric index to the column holding longitude values
 #' @param latitudeCol Character or integer. Name or numeric index to the column holding latitude values
+#' @param weightType Character. Weight method to be applied to sites. Default = "equal", "richness" adds weights equal to the species richness at each site, and "custom" uses site weights supplied in the data table in the column given parameter \emph{weightsCol}.
+#' @param weightsCol Character or integer. Name of numeric index (column number) of the column supplying custom weights for each site
 #' @param outFolder String. Path of the output folder
 #' @param trace Logical. Produce helpful diagnostic messages? Default is FALSE, therefore radio silence is maintained until told otherwise
 #'
@@ -35,10 +37,12 @@
 #' }
 cm_load_site_table <- function(thisExperiment = NULL,
                                siteFilename = NULL,
-                               sheet = NULL,                               
+                               sheet = NULL,
                                siteCol = NULL,
                                longitudeCol = NULL,
                                latitudeCol = NULL,
+                               weightType = "equal",
+                               weightsCol = NULL,
                                outFolder = "~/cmGDM/",
                                trace = FALSE)
 {
@@ -135,8 +139,8 @@ cm_load_site_table <- function(thisExperiment = NULL,
   }
   else
   {
-    testResult <- cm_colExists(siteCol, colnames(siteData), "Site/sample name column")
-    if (!testResult$isOK) stop(testResult$reason)
+    colCheck <- cm_colExists(siteCol, colnames(siteData), "Site/sample name column")
+    if (!colCheck$isOK) stop(colCheck$reason)
   }
   
   # Test for sensible values in the siteCol column of siteData
@@ -167,10 +171,10 @@ cm_load_site_table <- function(thisExperiment = NULL,
   
   # Are the numeric values OK?
   # Longitude checks...
-  testResult <- cm_colExists(longitudeCol, colnames(siteData), "Longitude column")
+  colCheck <- cm_colExists(longitudeCol, colnames(siteData), "Longitude column")
   
-  if (!testResult$isOK)
-    stop(testResult$reason)
+  if (!colCheck$isOK)
+    stop(colCheck$reason)
   else
   {
     siteData[, longitudeCol] <- as.numeric(siteData[, longitudeCol])
@@ -193,10 +197,10 @@ cm_load_site_table <- function(thisExperiment = NULL,
   
   #print("latitude checks")
   # Latitude checks...
-  testResult <- cm_colExists(latitudeCol, colnames(siteData), "Latitude column")
+  colCheck <- cm_colExists(latitudeCol, colnames(siteData), "Latitude column")
   
-  if (!testResult$isOK)
-    stop(testResult$reason)
+  if (!colCheck$isOK)
+    stop(colCheck$reason)
   else
   {
     siteData[, latitudeCol] <- as.numeric(siteData[, latitudeCol])
@@ -213,11 +217,48 @@ cm_load_site_table <- function(thisExperiment = NULL,
     
     if (any(siteData[, latitudeCol] > 0))
     {
-      stop("One of more values in latitude column of data file are greater than zero; all sites must have negative latitudes in Australia")
+      stop("One or more values in latitude column of data file are greater than zero; all sites must have negative latitudes in Australia")
     }
   }
   
-  # Check for coords in the geographical extent of covariate rasters
+  # Check for coords in the geographical extent of covariate rasters??
+  
+  # Check weights column (if present). Basic consistency checks are performed
+  # here with further actions deferred until biological data is loaded for the
+  # case of weightType == "richness"
+  if ((weightType == "custom"))
+  {
+    if (is.null(weightsCol))
+      stop("Site weights are set to 'custom' but no weight column has been given")
+    else
+    {
+      colCheck <- cm_colExists(weightsCol, colnames(siteData), "Weights column")
+      
+      if (!colCheck$isOK)
+      {
+        stop(colCheck$reason)
+      }
+      else
+      {
+        # So the user-specified weights column exists. Does is have missing,
+        # non-numeric or negative values?
+        if (any(is.na(siteData[, weightsCol])))
+        {
+          stop("Weights values cannot be missing when a weights column has been specified")
+        }
+        
+        if (any(is.na(as.numeric(siteData[, weightsCol]))))
+        {
+          stop("Weight values must be numeric")
+        }
+        
+        if (any(siteData[, weightsCol] < 0))
+        {
+          stop("Weight values must be > 0")
+        }
+      }
+    }
+  }
   
   # Make/check path for output for this experiment
   outFolder <- paste0(path.expand(outFolder), thisExperiment$experimentName)
@@ -240,6 +281,8 @@ cm_load_site_table <- function(thisExperiment = NULL,
   thisExperiment$data$siteData$siteCol <- siteCol
   thisExperiment$data$siteData$longitudeCol <- longitudeCol
   thisExperiment$data$siteData$latitudeCol <- latitudeCol
+  thisExperiment$data$siteData$weightType <- weightType
+  thisExperiment$data$siteData$weightsCol <- weightsCol
   thisExperiment$data$siteData$dataTable <- siteData
   
   saveRDS(thisExperiment, paste0(outFolder, "/cmGDM_", thisExperiment$experimentName, ".rds"))

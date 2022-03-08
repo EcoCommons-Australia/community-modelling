@@ -29,7 +29,7 @@ library(cmGDM)
 ##### Presence-absence data
 
 ### CHANGE THE PATH TO SHOW THE FOLDER IN WHICH YOU HAVE STORED THE DOWNLOADED DATA FILES ####
-base_folder <- "/home/peterw/Nyctimene/EcoCommons/R-scripts/protoype_dev/test_data/"
+base_folder <- "/home/peterw/Data_and_Projects/EcoCommons/community-modelling-workflow/test_data/"
 ##############################################################################################
 
 dataTestExp <- cmGDM::cm_create_new_experiment(userID = "user123",
@@ -270,3 +270,70 @@ ans <- cmGDM::cm_load_community_data(thisExperiment = dataTestExp,
                                      bioFilename = paste0(base_folder, "community_Count_OK.csv"),
                                      dataType = "Abundance",
                                      dissimMeasure = "Bray-Curtis")
+
+
+##### Abundance with weights loaded by load_site_table(). Therefore, each test
+##### is preceded by a call to this function to instantiate an object with site
+##### data correctly loaded
+
+# Test 1: Abundance (count) data with weightType == 'equal': Expect error-free load
+dataTestExp <- cmGDM::cm_load_site_table(thisExperiment = dataTestExp,
+                                         siteFilename = paste0(base_folder, "siteData_OK.csv"),
+                                         siteCol = 1,
+                                         longitudeCol = 2,
+                                         latitudeCol = 3)
+
+ans <- cmGDM::cm_load_community_data(thisExperiment = dataTestExp,
+                                     siteCol = 1,
+                                     bioFilename = paste0(base_folder, "community_Count_OK.csv"),
+                                     dataType = "Abundance",
+                                     dissimMeasure = "Bray-Curtis")
+
+# Test 2: Abundance (count) data with weightType == 'richness': Expect error-free load
+dataTestExp <- cmGDM::cm_load_site_table(thisExperiment = dataTestExp,
+                                         siteFilename = paste0(base_folder, "siteData_OK.csv"),
+                                         siteCol = 1,
+                                         longitudeCol = 2,
+                                         latitudeCol = 3,
+                                         weightType = "richness")
+
+ans <- cmGDM::cm_load_community_data(thisExperiment = dataTestExp,
+                                     siteCol = 1,
+                                     bioFilename = paste0(base_folder, "community_Count_OK.csv"),
+                                     dataType = "Abundance",
+                                     dissimMeasure = "Bray-Curtis")
+
+# Check that the site data table has been updated with richness values as
+# weights: expect to see a "weights" column with values 1, 3, 3, 3, 3
+print(ans$data$siteData$dataTable)
+
+# Test 3: Abundance (count) data with weightType == 'custom': Expect error-free load
+dataTestExp <- cmGDM::cm_load_site_table(thisExperiment = dataTestExp,
+                                         siteFilename = paste0(base_folder, "siteData_weights_custom_user_colname_OK.csv"),
+                                         siteCol = 1,
+                                         longitudeCol = 2,
+                                         latitudeCol = 3,
+                                         weightType = "custom",
+                                         weightsCol = "site_weights")
+
+ans <- cmGDM::cm_load_community_data(thisExperiment = dataTestExp,
+                                     siteCol = 1,
+                                     bioFilename = paste0(base_folder, "community_Count_OK.csv"),
+                                     dataType = "Abundance",
+                                     dissimMeasure = "Bray-Curtis")
+
+# Check that the site data table has been updated with custom values as
+# weights: expect to see a "weights" column with values 1, 1, 1, 2, 2 in column
+# named "site_weights"
+cat("Site data table:\n")
+print(ans$data$siteData$dataTable)
+cat("-----------------------------------------\n\n")
+
+# and expect to see weightType and weightsCol values recorded in site data
+# information
+cat("Site weight parameters:\n")
+cat("  Weight type:", ans$data$siteData$weightType, "\n")
+cat("  Weights column:", ans$data$siteData$weightsCol, "\n")
+cat("-----------------------------------------\n\n")
+
+

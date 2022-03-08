@@ -62,17 +62,62 @@ cm_run_gdm_experiment <- function(thisExperiment,
     print(envTable)
   }
   
-  # Add site column to bioData matrix as required for GDM data preparation
-  bio_table <- data.frame(site = thisExperiment$data$siteData$dataTable[, thisSiteCol],
-                          thisExperiment$data$biologicalData$dissimMatrix,
-                          stringsAsFactors = FALSE)
-  
-  dataStuff <- gdm::formatsitepair(bioData = bio_table,
-                                   bioFormat = 3,
-                                   siteColumn = "site",
-                                   XColumn = "X",
-                                   YColumn = "Y",
-                                   predData = envTable)
+  if (thisExperiment$data$biologicalData$dataType == "Dissimilarity")
+  {
+    # Add site column to bioData matrix as required for GDM data preparation
+    bio_table <- data.frame(site = thisExperiment$data$siteData$dataTable[, thisSiteCol],
+                            thisExperiment$data$biologicalData$dissimMatrix,
+                            stringsAsFactors = FALSE)
+    
+    dataStuff <- gdm::formatsitepair(bioData = bio_table,
+                                     bioFormat = 3,
+                                     siteColumn = "site",
+                                     XColumn = "X",
+                                     YColumn = "Y",
+                                     predData = envTable)
+    
+  }
+  else
+  {
+    # Because hte user has supplied a community table (either abundance or
+    # presence-absence coded) AND specified site weight type of either
+    # "richness" or "custom" we must use bioFormat == 1
+    
+    bio_table <- thisExperiment$data$biologicalData$dataTable
+    
+    # Prepare custom weights data.frame as needed:
+    if (thisExperiment$data$siteData$weightType == "custom")
+    {
+      customWeights <- data.frame(site = thisExperiment$data$siteData$dataTable[, thisSiteCol],
+                                  weights = thisExperiment$data$siteData$dataTable[, thisExperiment$data$siteData$weightCol])
+    }
+    else
+      customWeights <- NULL
+    
+    # formatsitepair() expects siteColumn to be the NAME of the column, so if it
+    # is numeric, translate to column name #### NOTE: This translation could be
+    # done in cm_load_community_data()
+    if (is.numeric(thisExperiment$data$biologicalData$siteCol))
+      siteColName <- colnames(thisExperiment$data$biologicalData$dataTable)[thisExperiment$data$biologicalData$siteCol]
+    
+    # Deal with translation of dissimilarity name conventions of vegan::vegdist()
+    if (thisExperiment$data$biologicalData$dissimMeasure == "Bray-Curtis")
+      thisDissimMeasure <- "bray"
+    else
+      thisDissimMeasure <- tolower(thisExperiment$data$biologicalData$dissimMeasure)
+
+    dataStuff <- gdm::formatsitepair(bioData = bio_table,
+                                     bioFormat = 1,
+                                     dist = thisDissimMeasure,
+                                     abundance = ifelse(thisExperiment$data$biologicalData$dataType == "Abundance", TRUE, FALSE),
+                                     siteColumn = siteColName,
+                                     XColumn = "X",
+                                     YColumn = "Y",
+                                     predData = envTable,
+                                     sppFilter = thisExperiment$data$biologicalData$sppFilter,
+                                     weightType = thisExperiment$data$siteData$weightType,
+                                     custWeights = customWeights)
+  }
   
   if (trace)
   {
@@ -91,25 +136,24 @@ cm_run_gdm_experiment <- function(thisExperiment,
   
   if (is.null(gdmModel)) # The model failed
   {
-    cat("Model fit for experiment '", thisExperiment$experimentName, "' has failed\n", sep = "")
+    cat("\n\nModel fit for experiment '", thisExperiment$experimentName, "' has failed\n", sep = "")
   }
   else
   {
-    cat("Model fit for experiment '", thisExperiment$experimentName, "' was successful\n", sep = "")
+    cat("\n\nModel fit for experiment '", thisExperiment$experimentName, "' was successful\n", sep = "")
     thisExperiment$dateLastModelRun <- as.character(Sys.Date())
     thisExperiment$status["modelFit_OK"] <- TRUE
     thisExperiment$model$gdm <- gdmModel
     
-    
     # Variable importance computations
     if (calc_varImp)
     {
-    #if (trace) print(dataStuff)
-    ans <- gdm::gdm.varImp(dataStuff, geo = thisExperiment$includeGeo, parallel = TRUE, fullModelOnly = FALSE,
-                           cores = numCores) #,
-    #outFile = paste0(outFolder, "/", this_Taxon, "_variable_importance_results.csv"))
-    #varImportance <- data.frame(importance = round(100*ans[[2]][, 1]/sum(ans[[2]][, 1]),2))
-    thisExperiment$model$varImp <- ans #100*ans[[2]][, 1]/sum(ans[[2]][, 1])
+      #if (trace) print(dataStuff)
+      ans <- gdm::gdm.varImp(dataStuff, geo = thisExperiment$includeGeo, parallel = TRUE, fullModelOnly = FALSE,
+                             cores = numCores) #,
+      #outFile = paste0(outFolder, "/", this_Taxon, "_variable_importance_results.csv"))
+      #varImportance <- data.frame(importance = round(100*ans[[2]][, 1]/sum(ans[[2]][, 1]),2))
+      thisExperiment$model$varImp <- ans #100*ans[[2]][, 1]/sum(ans[[2]][, 1])
     }
   }
   

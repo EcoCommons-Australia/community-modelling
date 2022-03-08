@@ -11,6 +11,8 @@ cm_load_site_table(
   siteCol = NULL,
   longitudeCol = NULL,
   latitudeCol = NULL,
+  weightType = "equal",
+  weightsCol = NULL,
   outFolder = "~/cmGDM/",
   trace = FALSE
 )
@@ -27,6 +29,10 @@ cm_load_site_table(
 \item{longitudeCol}{Character or integer. Name or numeric index to the column holding longitude values}
 
 \item{latitudeCol}{Character or integer. Name or numeric index to the column holding latitude values}
+
+\item{weightType}{Character. Weight method to be applied to sites. Default = "equal", "richness" adds weights equal to the species richness at each site, and "custom" uses site weights supplied in the data table in the column given parameter \emph{weightsCol}.}
+
+\item{weightsCol}{Character or integer. Name of numeric index (column number) of the column supplying custom weights for each site}
 
 \item{outFolder}{String. Path of the output folder}
 

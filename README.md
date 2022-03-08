@@ -114,32 +114,34 @@ Info supplied by user or uploaded by user, plus messages back to the user, is co
 | includeGeo  | logical | Will this experiment include geographic distance as a covariate? |
 |           |              |       |
 | data\$siteData\$srcFile | string  | File name of the site data table |
-| data\$siteData\$siteCol   | string             |  index to the column storing site name or labels (maybe supplied as a column name or integer representing col number converted to string)     |
-| data\$siteData\$longitudeCol  | string             | index to the column storing longitude of sites (maybe supplied as a column name or integer representing col number converted to string) |
-| data\$siteData\$latitudeCol  | string             | index to the column storing latitude of sites (maybe supplied as a column name or integer representing col number converted to string) |
+| data\$siteData\$siteCol   | string             |  Index to the column storing site name or labels (maybe supplied as a column name or integer representing col number converted to string)     |
+| data\$siteData\$longitudeCol  | string             | Index to the column storing longitude of sites (maybe supplied as a column name or integer representing col number converted to string) |
+| data\$siteData\$latitudeCol  | string             | Index to the column storing latitude of sites (maybe supplied as a column name or integer representing col number converted to string) |
+| data\$siteData\$weightType  | string | One of "equal" (default), "richness" or "custom" |
+| data\$siteData\$weightCol  | string |  Optional for _weightType_ == "equal" or _weightType_ == "richness". Index to the column storing site weights (maybe supplied as a column name or integer representing col number converted to string) |
 | data\$siteData\$dataTable  |  _R_ data.frame            | Site data table      |
 |           |              |       |
-| data\$biologicalData\$srcFile | string             |       |
-| data\$biologicalData\$fileType | string             | Which of the accepted file types is to be uploaded? Expected val;ues incl. '', ''     |
-| data\$biologicalData\$sheet |  string            | Label for the sheet in data file when 'dataType' == '' |
-| data\$biologicalData\$siteCol | string             | Column in 'dataTable' storing the site/sample labels |
-| data\$biologicalData\$dataType | string             | String representing the 'absence' state when 'dataType' == '' |
-| data\$biologicalData\$presenceMarker | string             |       |
-| data\$biologicalData\$absenceMarker | string             | String representing the 'absence' state when 'dataType' == ''     |
-| data\$biologicalData\$dissimMeasure          | string             | Dissimilarity measure used to generate 'dissimMatrix'  |
-| data\$biologicalData\$dataTable          | _R_ data.frame             | Stores raw community table supplied by the user      |
-| data\$biologicalData\$dissimMatrix          | _R_ numeric matrix | If dataType == 'Dissimilarity', stores uploaded dissimilarity matrix. Otherwise, stores result of applying 'dissomMeasure' to 'dataTable'.      |
+| data\$biologicalData\$srcFile | string  | Full path to the file holding biological data  |
+| data\$biologicalData\$fileType | string | Which of the accepted file types is to be uploaded? Expected values incl. 'csv', 'txt', 'ods', 'xls', or 'xlsx' |
+| data\$biologicalData\$sheet |  string   | Label for the sheet in data file when 'dataType' == '' |
+| data\$biologicalData\$siteCol | string  | Column in 'dataTable' storing the site/sample labels |
+| data\$biologicalData\$dataType | string | String representing the 'absence' state when 'dataType' == '' |
+| data\$biologicalData\$presenceMarker | string |       |
+| data\$biologicalData\$absenceMarker | string | String representing the 'absence' state when 'dataType' == ''     |
+| data\$biologicalData\$dissimMeasure  | string  | Dissimilarity measure used to generate 'dissimMatrix'  |
+| data\$biologicalData\$dataTable  | _R_ data.frame  | Stores raw community table supplied by the user      |
+| data\$biologicalData\$dissimMatrix  | _R_ numeric matrix | If dataType == 'Dissimilarity', stores uploaded dissimilarity matrix. Otherwise, stores result of applying 'dissomMeasure' to 'dataTable'.      |
 |           |              |       |
-| data\$covarData\$srcFolder |              | string      |
-| data\$covarData\$filenames |              | string vector      |
-| data\$covarData\$label  |              | string      |
-| data\$covarData\$covarNames          | string vector             |       |
-| data\$covarData\$dataTable          | _R_ numeric matrix             |       |
+| data\$covarData\$srcFolder | string | Full path to the folder holding covariate layer files |
+| data\$covarData\$filenames | string vector | Vector of names to covariate layers |
+| data\$covarData\$label  |  string |      |
+| data\$covarData\$covarNames | string vector  | Names of the coavariate layers; defaults to the base name component of _filenames_  |
+| data\$covarData\$dataTable | _R_ numeric matrix | Data for covariates at each site defined in _siteData_ extracted from the stacked covariate layers  |
 |           |              |       |
-| data\$predictionData\$srcFolder | string             |       |
-| data\$predictionData\$label     | string             |       |
-| data\$predictionData\$covarNames | string vector |       |
-| data\$predictionData\$dataTable | _R_ numeric matrix |       |
+| data\$predictionData\$srcFolder | string | Full path to the folder holding covariate layer files used for prediction to new environemtal conditions |
+| data\$predictionData\$label | string             |       |
+| data\$predictionData\$covarNames | string vector | Names of the coavariate layers; defaults to the base name component of _filenames_; must match the covariate names stored in _covarData_ which are used to fit the model |
+| data\$predictionData\$dataTable | _R_ numeric matrix | Data for covariates at each site defined in _siteData_ extracted from the stacked prediction covariate layers  |
 
 
 The following panel shows the source-code used to create the data structure of a _cm_experiment_ S3 object. Note that a number of fields are populated by _R_ code and are not solicited from the user via the GUI. These include:
@@ -172,6 +174,8 @@ The following panel shows the source-code used to create the data structure of a
                                                      siteCol = "",
                                                      longitudeCol = "",
                                                      latitudeCol = "",
+                                                     weightType = "",
+                                                     weightCol = "",
                                                      dataTable = data.frame()),
                                      biologicalData = list(srcFile = "",
                                                            fileType = "",
@@ -181,6 +185,7 @@ The following panel shows the source-code used to create the data structure of a
                                                            presenceMarker = "1",
                                                            absenceMarker = "0",
                                                            dissimMeasure = "",
+                                                           sppFilter = 0,
                                                            dataTable = data.frame(),
                                                            dissimMatrix = matrix()),
                                      covarData = list(srcFolder = "",
@@ -212,11 +217,9 @@ The following panel shows the source-code used to create the data structure of a
 
 ## A worked example
 
-A small set of data files has also been included in the folder _worked_example_. An _R_-script is included to run the complete workflow, but of course each step can be run from the command line if desired.
+A small set of data files has also been included in the folder _Workflow_examples_. An _R_-script is included to run the complete workflow, but of course each step can be run from the command line if desired.
 
 The worked example illustrates the workflow to fit a very basic GDM.
-
-
 
 Successful completion of the worked example should result in the following output in the console when the function _cm_gdm_summary()_ is called:
 

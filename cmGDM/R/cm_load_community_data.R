@@ -14,6 +14,7 @@
 #' @param bioFilename Character. Full path to a file containing an accepted form of biological or community data
 #' @param sheet Character or integer. Name or index number of a sheet if \emph{bioFilename} points to a file containing a spreadsheet/workbook
 #' @param dataType Character. One of the accepted data types in entries in the file named in \emph{bioFilename}. One of: "Presence_absence", "Abundance", "Dissimilarity"
+#' @param sppFilter Integer. For dataType == "Abundance" or dataType == "Presence_absence", filter sites with richnes < sppFilter. Default of 0 causes no filtering.
 #' @param presenceMarker Character. Denotes "presence" when in the file named in \emph{bioFilename} has \emph{dataType} of "Presence-Absence"
 #' @param absenceMarker Character. Denotes "absence" when in the file named in \emph{bioFilename} has \emph{dataType} of "Presence-Absence"
 #' @param siteCol Character or integer. Name or numeric index to the column holding the site names or identifiers
@@ -35,6 +36,7 @@ cm_load_community_data <- function(thisExperiment = NULL,
                                    bioFilename = NULL,
                                    sheet = 1,
                                    dataType = "", #c("Presence_absence", "Abundance", "Dissimilarity"),
+                                   sppFilter = 0,
                                    presenceMarker = "1",
                                    absenceMarker = "0",
                                    siteCol = NULL,
@@ -203,7 +205,7 @@ cm_load_community_data <- function(thisExperiment = NULL,
     if (dataType == "Presence_absence")
     {
       bioData_trimmed <- matrix(as.character(as.matrix(bioData_trimmed)), nrow(bioData_trimmed), ncol(bioData_trimmed),
-                        dimnames = list(rownames(bioData_trimmed), colnames(bioData_trimmed)))
+                                dimnames = list(rownames(bioData_trimmed), colnames(bioData_trimmed)))
       
       if (trace)
       {
@@ -233,7 +235,7 @@ cm_load_community_data <- function(thisExperiment = NULL,
       
       # Convert bioData to a numeric table and test for 0, 1-only coding
       bioData_trimmed <- matrix(as.numeric(bioData_trimmed), nrow(bioData_trimmed), ncol(bioData_trimmed),
-                        dimnames = list(rownames(bioData_trimmed), colnames(bioData_trimmed)))
+                                dimnames = list(rownames(bioData_trimmed), colnames(bioData_trimmed)))
       
       if (trace)
       {
@@ -315,6 +317,31 @@ cm_load_community_data <- function(thisExperiment = NULL,
       if (dissimMeasure == "Bray-Curtis")
         dissimMat <- as.matrix(vegan::vegdist(bioData_trimmed))
     }
+    
+    ######### Compute weights for weightType == 'richness' or weightType ==
+    # 'equal', and store them in the experiment object because they will not be
+    # visible to the user for later review, etc.
+    if (dataType == "Presence-absence")
+      richness <- rowSums(bioData_trimmed)
+    else
+    {
+      if (dataType == "Abundance")
+        richness <- rowSums(ifelse(bioData_trimmed > 0, 1, 0))
+      else
+        richness <- rep(1, nrow(bioData_trimmed))
+    }
+    
+    # Is there are weights column present in siteData? If not add it, and
+    # store richness vector in it.
+    if (thisExperiment$data$siteData$weightCol != "")
+    {
+      thisExperiment$data$siteData[, thisExperiment$data$siteData$weightCol] <- richness
+    }
+    else
+    {
+      thisExperiment$data$siteData$weightCol <- "weights"
+      thisExperiment$data$siteData$dataTable <- data.frame(thisExperiment$data$siteData$dataTable, weights = richness)
+    }
   }
   else  # Dissimilarity
   {
@@ -369,7 +396,7 @@ cm_load_community_data <- function(thisExperiment = NULL,
     # Row names in bioData are all present in siteTable (which MUST have been loaded before attempting to load bioData)
     if (!all(siteNames %in% thisExperiment$data$siteData$dataTable[, thisExperiment$data$siteData$siteCol]))
       stop(paste("Site names in bioData do not match site labels in siteData"))
-
+    
     # Test for negative values
     negCells <- which(bioData_trimmed < 0, arr.ind = TRUE)
     

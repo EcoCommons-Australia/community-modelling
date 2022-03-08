@@ -8,21 +8,22 @@
 #
 # Peter D. Wilson
 # Adjunct Fellow
-# Dept. of Biological Sciences
+# Dept. of Natural Sciences
 # Faculty of Science and Engineering
-# Macquarie University, Sydney, Australia
+# Macquarie University, North Ryde, NSW, Australia 2019
 #
 # 2021-08-15: Version of the first kind
 # 2021-11-24: Changed to use prototype package 'cmGDM', and
 # generalised access to test data files via a global parameter which points to
 # the data file folder.
 # 2022-02-19: Some code tidy-ups to adapt to modifications to cmGDM functions
-#
+# 2022-03-08: Added tests for site data with a 'weights' column to test
+# enhancements to cmGDM::load_site_table() and cmGDM::load_community_data()
 
 library(cmGDM)
 
 ### CHANGE THE PATH TO SHOW THE FOLDER IN WHICH YOU HAVE STORED THE DOWNLOADED DATA FILES ####
-base_folder <- "/home/peterw/Nyctimene/EcoCommons/R-scripts/protoype_dev/test_data/"
+base_folder <- "/home/peterw/Data_and_Projects/EcoCommons/community-modelling-workflow/test_data/"
 ##############################################################################################
 
 siteTestExp <- cmGDM::cm_create_new_experiment(userID = "user123",
@@ -163,4 +164,51 @@ ans <- cm_load_site_table(thisExperiment = siteTestExp,
                           longitudeCol = 2,
                           latitudeCol = 3)
 
+# Test 19: load valid file in csv format with a COMMA delimiter, a 'weights'
+# column with a missing weight value
+ans <- cm_load_site_table(thisExperiment = siteTestExp,
+                          siteFilename = paste0(base_folder, "siteData_weights_custom_user_colname_missing_weight.csv"),
+                          siteCol = "site",
+                          longitudeCol = 2,
+                          latitudeCol = 3,
+                          weightType = "custom",
+                          weightsCol = "site_weights")
 
+# Test 20: load valid file in csv format with a COMMA delimiter, a 'weights'
+# column with NO missing weight value
+ans <- cm_load_site_table(thisExperiment = siteTestExp,
+                          siteFilename = paste0(base_folder, "siteData_weights_custom_user_colname_OK.csv"),
+                          siteCol = "site",
+                          longitudeCol = 2,
+                          latitudeCol = 3,
+                          weightType = "custom",
+                          weightsCol = "site_weights")
+
+# Test 21: load valid file in csv format with a COMMA delimiter, 'custom"
+# weights but mis-specified weights column
+ans <- cm_load_site_table(thisExperiment = siteTestExp,
+                          siteFilename = paste0(base_folder, "siteData_weights_custom_user_colname_OK.csv"),
+                          siteCol = "site",
+                          longitudeCol = 2,
+                          latitudeCol = 3,
+                          weightType = "custom",
+                          weightsCol = "mystery_column")
+
+# Test 22: load valid file in csv format with a COMMA delimiter, a 'weights'
+# column with NO missing weight value, weights are equal and call made without setting weightType.
+# Loading should not flag any error
+ans <- cm_load_site_table(thisExperiment = siteTestExp,
+                          siteFilename = paste0(base_folder, "siteData_weights_equal_OK.csv"),
+                          siteCol = "site",
+                          longitudeCol = 2,
+                          latitudeCol = 3)
+
+# Test 23: load valid file in csv format with a COMMA delimiter, a 'weights'
+# column with NO missing weight value, weights are equal and call made with weightType = 'richness'.
+# Loading should not flag any error as richness weights are computed when commumnity data is loaded
+ans <- cm_load_site_table(thisExperiment = siteTestExp,
+                          siteFilename = paste0(base_folder, "siteData_weights_equal_OK.csv"),
+                          siteCol = "site",
+                          longitudeCol = 2,
+                          latitudeCol = 3,
+                          weightType = "richness")
