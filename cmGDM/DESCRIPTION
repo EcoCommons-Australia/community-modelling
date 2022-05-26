@@ -1,15 +1,14 @@
 Package: cmGDM
 Type: Package
 Title: Create and run a community model GDM experiment
-Version: 0.1
+Version: 0.2
 Date: 2021-11-12
 Author: Peter D. Wilson
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Maintainer: Peter D. Wilson <peterdonaldwilson@gmail.com>
 Description: Functions to create, run and report results from an EcoCommons Community Modelling experiment run using Generalised Dissimilarity Modelling.
 License: GPL-3
 Imports:
  methods,
- reader,
  readODS,
  gdata,
  Rfast,
