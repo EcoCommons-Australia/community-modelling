@@ -41,7 +41,7 @@
 #' @importFrom methods is
 #' @importFrom stats na.omit
 #' @importFrom png writePNG
-#' @importFrom gdalUtils gdal_translate
+#' @importFrom gdalUtilities gdal_translate
 #' @importFrom rmarkdown render
 #' @importFrom rlang .data
 #' @docType package

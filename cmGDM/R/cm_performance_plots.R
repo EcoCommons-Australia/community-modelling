@@ -91,62 +91,70 @@ cm_performance_plots <- function(thisExperiment,
   
   if (length(thisExperiment$model$varImp) > 0)
   {
-    # Extract scores
-    #varImpScore <- sort(100*thisExperiment$model$varImp[[2]][, 1]/sum(thisExperiment$model$varImp[[2]][, 1]), decreasing = TRUE)
-    varImpScore <- sort(round(thisExperiment$model$varImp[[2]][, 1], 3), decreasing = TRUE)
+    # Extract scores: Latest version of gdm only retains non-zero values of variable importance
+    varImpScore <- rep(0, length(thisExperiment$model$gdm$predictors))
+    names(varImpScore) <- thisExperiment$model$gdm$predictors
+    
+    # Insert non-zero importance scores
+    varImpScore[rownames(thisExperiment$model$varImp[[2]])] <- round(thisExperiment$model$varImp[[2]][, 1], 3)
+    
+    #ii <- order(varImpScore, decreasing = TRUE)
+    varImpScore <- sort(varImpScore, decreasing = TRUE)
     
     # Trim variables to be plotted?
     if (toupper(showVarImp) == "NONZERO")
     {
-      varImpScore <- varImpScore[varImpScore > 0]
+      ii_zero <- which(varImpScore == 0)
+      if (length(ii_zero) > 0)
+        varImpScore <- varImpScore[-ii_zero]
     }
     
+    # These are the variable names to be plotted...
     varNames <- names(varImpScore)
-  }
-  else
-    varNames <- colnames(plotyStuff$x)
-  
-  # Set up a container for the ggplot objects
-  plotyBits <- vector("list", length(varNames))
-  names(plotyBits) <- varNames
-  
-  # Step through the list of variables to be plotted
-  for (thisVar in varNames)
-  {
-    plotData <- data.frame(x = plotyStuff$x[, thisVar],
-                           y = plotyStuff$y[, thisVar])
+    #}
     
-    if (length(thisExperiment$model$varImp) > 0)
+    # Set up a container for the ggplot objects
+    plotyBits <- vector("list", length(varNames))
+    names(plotyBits) <- varNames
+    
+    # Step through the list of variables to be plotted
+    for (thisVar in varNames)
     {
-      plotyBits[[thisVar]] <- ggplot2::ggplot(plotData, aes(x = .data$x, y = .data$y)) +
-        ggplot2::geom_line(colour = "blue", size = 1) +
-        ggplot2::ylab(paste0("f(", thisVar, ")")) +
-        ggplot2::xlab(thisVar) +
-        ggplot2::ylim(c(0, ceiling(max(plotyStuff$y)))) +
-        ggplot2::ggtitle(paste0("Contribution: ", round(varImpScore[thisVar], 2))) +
-        ggplot2::theme(title = ggplot2::element_text(size = 9),
-                       axis.title.x = ggplot2::element_text(size = 9),
-                       axis.title.y = ggplot2::element_text(size = 9),
-                       axis.text.x = ggplot2::element_text(size = 8),
-                       axis.text.y = ggplot2::element_text(size = 8))
+      plotData <- data.frame(x = plotyStuff$x[, thisVar],
+                             y = plotyStuff$y[, thisVar])
+      
+      #if (length(thisExperiment$model$varImp) > 0)
+      #{
+        plotyBits[[thisVar]] <- ggplot2::ggplot(plotData, aes(x = .data$x, y = .data$y)) +
+          ggplot2::geom_line(colour = "blue", size = 1) +
+          ggplot2::ylab(paste0("f(", thisVar, ")")) +
+          ggplot2::xlab(thisVar) +
+          ggplot2::ylim(c(0, ceiling(max(plotyStuff$y)))) +
+          ggplot2::ggtitle(paste0("Contribution: ", round(varImpScore[thisVar], 2))) +
+          ggplot2::theme(title = ggplot2::element_text(size = 9),
+                         axis.title.x = ggplot2::element_text(size = 9),
+                         axis.title.y = ggplot2::element_text(size = 9),
+                         axis.text.x = ggplot2::element_text(size = 8),
+                         axis.text.y = ggplot2::element_text(size = 8))
+      #}
+      # else
+      # {
+      #   plotyBits[[thisVar]] <- ggplot2::ggplot(plotData, aes(x = .data$x, y = .data$y)) +
+      #     ggplot2::geom_line(colour = "blue", size = 1) +
+      #     ggplot2::ylab(paste0("f(", thisVar, ")")) +
+      #     ggplot2::xlab(thisVar) +
+      #     ggplot2::ylim(c(0, ceiling(max(plotyStuff$y)))) +
+      #     ggplot2::theme(title = ggplot2::element_text(size = 9),
+      #                    axis.title.x = ggplot2::element_text(size = 9),
+      #                    axis.title.y = ggplot2::element_text(size = 9),
+      #                    axis.text.x = ggplot2::element_text(size = 8),
+      #                    axis.text.y = ggplot2::element_text(size = 8))
+      # }
     }
-    else
-    {
-      plotyBits[[thisVar]] <- ggplot2::ggplot(plotData, aes(x = .data$x, y = .data$y)) +
-        ggplot2::geom_line(colour = "blue", size = 1) +
-        ggplot2::ylab(paste0("f(", thisVar, ")")) +
-        ggplot2::xlab(thisVar) +
-        ggplot2::ylim(c(0, ceiling(max(plotyStuff$y)))) +
-        ggplot2::theme(title = ggplot2::element_text(size = 9),
-                       axis.title.x = ggplot2::element_text(size = 9),
-                       axis.title.y = ggplot2::element_text(size = 9),
-                       axis.text.x = ggplot2::element_text(size = 8),
-                       axis.text.y = ggplot2::element_text(size = 8))
-    }
+    
+    # Save the multipanel plot
+    ggpubr::ggarrange(plotlist = plotyBits, ncol = 3, nrow = 4) %>%
+      ggpubr::ggexport(filename = paste0(outFolder, "/cmGDM_", thisExperiment$experimentName ,"_GDM_variable_splines_transformed.png"),
+                       width = 1024, height = 1400, res = 150)
   }
-  
-  # Save the multipanel plot
-  ggpubr::ggarrange(plotlist = plotyBits, ncol = 3, nrow = 4) %>%
-    ggpubr::ggexport(filename = paste0(outFolder, "/cmGDM_", thisExperiment$experimentName ,"_GDM_variable_splines_transformed.png"),
-                     width = 1024, height = 1400, res = 150)
 }

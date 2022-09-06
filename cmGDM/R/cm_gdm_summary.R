@@ -30,13 +30,17 @@ cm_gdm_summary <- function(thisExperiment,
   {
     if (length(thisExperiment$model$varImp) > 0)
     {
-      #impScores <- round(100*thisExperiment$model$varImp[[2]][,1]/sum(thisExperiment$model$varImp[[2]][, 1]), 2)
-      impScores <- round(thisExperiment$model$varImp[[2]][,1], 2)
+      impScores <- rep(0, length(thisExperiment$model$gdm$predictors))
+      names(impScores) <- thisExperiment$model$gdm$predictors
+      
+      # Insert non-zero importance scores
+      impScores[rownames(thisExperiment$model$varImp[[2]])] <- round(thisExperiment$model$varImp[[2]][, 1], 3)
+      
       maxLen <- max(unlist(lapply(names(impScores), stringr::str_length)))
       paddedNames <- stringr::str_pad(names(impScores), side = "left", width = maxLen + 4, pad = " ")
-      paddedNums <- paste0("        ", format(impScores)) #stringr::str_pad(as.character(impScores), side = "left", width = 6, pad = " ")
-      #impTable <- data.frame(Covariate = names(impScores), Contribution = impScores, stringsAsFactors = FALSE)
+      paddedNums <- paste0("   ", format(impScores))
       impTable <- matrix(c(paddedNames, paddedNums), ncol = 2, dimnames = list(NULL, c("Covariate", "Contribution")))
+      
       impTable_str <- c("    Covariate       Contrib.", "    ------------    -----------", paste(impTable[, 1], impTable[, 2]))
     }
     else

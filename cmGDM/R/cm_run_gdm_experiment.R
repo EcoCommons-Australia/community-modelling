@@ -149,7 +149,7 @@ cm_run_gdm_experiment <- function(thisExperiment,
     if (calc_varImp)
     {
       #if (trace) print(dataStuff)
-      ans <- gdm::gdm.varImp(dataStuff, geo = thisExperiment$includeGeo, parallel = TRUE, fullModelOnly = FALSE,
+      ans <- gdm::gdm.varImp(dataStuff, geo = thisExperiment$includeGeo, parallel = TRUE,
                              cores = numCores) #,
       #outFile = paste0(outFolder, "/", this_Taxon, "_variable_importance_results.csv"))
       #varImportance <- data.frame(importance = round(100*ans[[2]][, 1]/sum(ans[[2]][, 1]),2))
