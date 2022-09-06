@@ -60,7 +60,7 @@ library(cmGDM)
 # Step 1: Create experiment object
 myExperiment <- cmGDM::cm_create_new_experiment(userID = "ID123",
                                                 userName = "Peter D. Wilson",
-                                                experimentName = "Example GDM fit Fst",
+                                                experimentName = "Example GDM fit Fst v2_nonzero",
                                                 description = "Use Acacia purpureopetala data as Fst example")
 
 # Step 2: Load site details: You will need to change the path to the site data
