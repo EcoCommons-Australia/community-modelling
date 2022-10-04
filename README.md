@@ -1,3 +1,8 @@
+<center>
+
+<img width="1000" alt="EcoCommons" src="https://user-images.githubusercontent.com/11275799/193713904-b7f0b479-4fdf-40c6-84ce-7f64a500fcac.png">
+
+</center>
 
 # Community modelling workflow
 ### Generalised Dissimilarity Modelling (GDM)
@@ -29,19 +34,19 @@ This document provides an outline of a prototype _R_-package, _cmGDM_,  which is
 
 **1. One streamlined protocol for data collation & upload**
 
-The _R_-package _gdm_ provides a preparatory function, _formatsitepair()_, which allows users to present data components in four formats, or "bioformats" in _gdm_ terminology, which are then compiled into a data table used by the function _gdm()_ to fit the model. Although this flexibility is suitable for experienced _R_ users, it can be very challenging for casual users to make appropriate choices among numerous possible combinations, and prepare data components in the required formats.
+The _R_-package `gdm` provides a preparatory function, _formatsitepair()_, which allows users to present data components in four formats, or "bioformats" in `gdm` terminology, which are then compiled into a data table used by the function _gdm()_ to fit the model. Although this flexibility is suitable for experienced _R_ users, it can be very challenging for casual users to make appropriate choices among numerous possible combinations, and prepare data components in the required formats.
 
-The four formats represent different combinations of pre-processed fundamental data tables needed to fit a GDM. The concept implemented in _cmGDM_ is to begin with basic table formats and generate pre-processed or derived tables by asking users to supply necessary information. For example, users will be asked to load community data as either a presence-absence table, an abundance table, or a dissimilarity table. In the first two table types, they are standard tables which may be assembled by hand (in spreadsheets for example) or output by functions in other _R_-packages. For dissimilarity tables, many functions in other R-packages can produce dissimilarity tables including the _R_-package _vegan_, and several packages for analysing phylogenetic and population genetic data.
+The four formats represent different combinations of pre-processed fundamental data tables needed to fit a GDM. The concept implemented in `cmGDM` is to begin with basic table formats and generate pre-processed or derived tables by asking users to supply necessary information. For example, users will be asked to load community data as either a presence-absence table, an abundance table, or a dissimilarity table. In the first two table types, they are standard tables which may be assembled by hand (in spreadsheets for example) or output by functions in other _R_-packages. For dissimilarity tables, many functions in other R-packages can produce dissimilarity tables including the _R_-package `vegan`, and several packages for analysing phylogenetic and population genetic data.
 
-> The path to data importation chosen during the development of _cmGDM_ is to follow procedures referred to as "bioformat = 3" in the _gdm_ package.
+> The path to data importation chosen during the development of `cmGDM` is to follow procedures referred to as "bioformat = 3" in the `gdm` package.
 
 The expected advantages of this approach include:
 
-- Users can easily assemble necessary tables for each data component using any application with which they feel comfortable (typically, a spreadsheet application)
+- Users can easily assemble necessary tables for each data component using any application with which they feel comfortable (typically, a spreadsheet application);
 
-- More robust data checking is possible enabling better guidance and support to users who need additional assistance
+- More robust data checking is possible enabling better guidance and support to users who need additional assistance;
 
-- No loss of modelling flexibility even though data input preparations are streamlined into a simplified protocol
+- No loss of modelling flexibility even though data input preparations are streamlined into a simplified protocol.
 
 **2. Staged data entry**
 
@@ -55,21 +60,21 @@ As mentioned above, data entry problems are intercepted at each step through the
 
 **4. Flexible data file formats**
 
-EcoCommons users have a wide range of skills and experience in preparing and manipulating data required for model fitting. More experienced users, particularly those users with good _R_ skills, will be able to load data into an _R_ session from a range of formats (e.g. Excel spreadsheet, comma-separated value or csv file, etc), re-organise and export data to a variety of formats suitable for use in fitting a GDM. Existing modelling modules in EcoCommons permit only the uploading of csv-formatted text files as data tables. A design decision taken in developing the prototype _R_-package _cmGDM_, was allowing users to upload data tables in a wide selection of standard data file types. This is easily implemented in _R_ because of the very extensive list of _R_-packages available in the CRAN repository which cater for many file formats.
+EcoCommons users have a wide range of skills and experience in preparing and manipulating data required for model fitting. More experienced users, particularly those users with good _R_ skills, will be able to load data into an _R_ session from a range of formats (e.g. Excel spreadsheet, comma-separated value or csv file, etc), re-organise and export data to a variety of formats suitable for use in fitting a GDM. Existing modelling modules in EcoCommons permit only the uploading of csv-formatted text files as data tables. A design decision taken in developing the prototype _R_-package `cmGDM`, was allowing users to upload data tables in a wide selection of standard data file types. This is easily implemented in _R_ because of the very extensive list of _R_-packages available in the CRAN repository which cater for many file formats.
 
-The file formats currently supported by _cmGDM_ include:
+The file formats currently supported by `cmGDM` include:
 
-- comma-separated value (csv) text files
-- TAB-separated (tsv) text files
-- space-separated text files
-- openDocument (ods) format spreadsheets
-- Excel spreadsheets (xls & xlsx) spreadsheets
+- comma-separated value (csv) text files;
+- TAB-separated (tsv) text files;
+- space-separated text files;
+- openDocument (ods) format spreadsheets;
+- Excel spreadsheets (xls & xlsx) spreadsheets.
 
 For spreadsheets, users can select the sheet within a multi-sheet document (more correctly referred to as a 'workbook') by sheet number or name as this is a parameter available in the functions called from relevant packages to import spreadsheets.
 
 **5. Loosely OO design**
 
-A major design choice in the prototype package _cmGDM_ was to use an object-oriented approach as much as possible. The package implements a simple S3 object of class "cm_experiment" which embodies the staged approach to data collation and quality checking. 
+A major design choice in the prototype package `cmGDM` was to use an object-oriented approach as much as possible. The package implements a simple S3 object of class "cm_experiment" which embodies the staged approach to data collation and quality checking. 
 
 ## Test Data set and testing process
 
@@ -83,7 +88,7 @@ File names reflect the error condition contained within each file (where _error 
 
 #### Test procedure
 
-A set of _R_-scripts is provided in the folder _test_scripts_ to run through a tests for each data entry script. Naturally, they assume that package _cmGDM_ has been downloaded and installed.
+The "Community modelling" Jupyter Notebook sets four tests examples.
 
 Because a trapped error invokes the __stop()__ function, running each test involves highlighting the appropriate lines and then clicking on the "Run" option in _R_-Studio. An error-checking test is expected to emit the appropriate error message to the _R_-console.
 
