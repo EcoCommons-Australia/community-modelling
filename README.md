@@ -1,19 +1,29 @@
+
+# Community modelling workflow
+### Generalised Dissimilarity Modelling (GDM)
+
 ---
-output:
-  pdf_document: default
-  html_document: default
+Author details:  EcoCommons Platform   
+Contact details: comms@ecocommons.org.au  
+Copyright statement: This script is the product of EcoCommons platform.   
+                     Please refer to the EcoCommons website for more details:   
+                     <https://www.ecocommons.org.au/>  
+Date: October 2022  
+
 ---
-# Community Modelling Workflow
 
-# Generalised Dissimilarity Modelling (GDM)
+#### About this document
 
-## About this document
+Generalised Dissimilarity Modelling (GDM) has become a widely-used method to link differences in composition between samples and explanatory environmental variables ("covariates"). The dependent or predicted variable in a GDM may be any form of distance or dissimilarity measure scaled to range between 0 (exactly matching pairs)and 1 (totally dissimilar pairs). GDMs may be fitted using any assemblage of covariates thought to be important in explaining the differences in composition between pairs of samples. Geographical distance can be optionally included as a covariate to account for distance-decay or "isolation by distance" (IBD) effects.
 
-Generalised Dissimilarity Modelling (GDM) has become a widely-used method to link differences in composition between samples and explanatory environmental variables ("covariates"). The dependent or predicted variable in a GDM may be any form of distance or dissimilarity measure scaled to range between 0 and 1. GDMs may be fitted using any assemblage of covariates thought to be important in explaining the differences in composition between pairs of samples. Geographical distance can be optionally included as a covariate to account for distance-decay or "isolation by distance" (IBD) effects.
+The prototype R-package, `cmGDM` is designed to implement GDM
+modelling as the first method within a new EcoCommons Community Modelling module. Fitting a GDM is performed by the R-package `gdm` available from the [CRAN repository](https://cran.r-project.org/web/packages/gdm/index.html) . `cmGDM` has been designed to implement a simple, robust workflow for basic fitting, review and reporting of GDMs.
+
+In the near future, this material may form part of comprehensive support materials available to EcoCommons users. If you have any corrections or suggestions, please [contact the EcoCommons](mailto:comms@ecocommons.org.au) support and communications team.
 
 This document provides an outline of a prototype _R_-package, _cmGDM_,  which is designed to implement GDM modelling as the first method within a new EcoCommons Community Modelling module. Fitting a GDM is performed by the _R_-package _gdm_ available from the CRAN repository. _cmGDM_ has been designed to implement a simple, robust workflow for basic fitting, review and reporting of GDMs.
 
-**This document describes the state of development and testing of the R-package _cmGDM_ as at 30 January 2022.**
+---
 
 ## Design concepts and principles
 
